@@ -1,0 +1,15 @@
+E:\programmering\C#\CS-Java-VM\bin\Debug\net6.0\CS-Java-VM.exe
+E:\programmering\C#\CS-Java-VM\bin\Debug\net6.0\CS-Java-VM.deps.json
+E:\programmering\C#\CS-Java-VM\bin\Debug\net6.0\CS-Java-VM.runtimeconfig.json
+E:\programmering\C#\CS-Java-VM\bin\Debug\net6.0\CS-Java-VM.dll
+E:\programmering\C#\CS-Java-VM\bin\Debug\net6.0\CS-Java-VM.pdb
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.csproj.AssemblyReference.cache
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.GeneratedMSBuildEditorConfig.editorconfig
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.AssemblyInfoInputs.cache
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.AssemblyInfo.cs
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.csproj.CoreCompileInputs.cache
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.dll
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\refint\CS-Java-VM.dll
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.pdb
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\CS-Java-VM.genruntimeconfig.cache
+E:\programmering\C#\CS-Java-VM\obj\Debug\net6.0\ref\CS-Java-VM.dll
