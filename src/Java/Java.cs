@@ -1,5 +1,6 @@
 using CS_Java_VM.Src.Java.Constants;
 
+using System.Linq;
 using System.IO;
 using System;
 
@@ -23,91 +24,104 @@ public class JavaClass {
   UInt16 ThisClass, SuperClass;
 
   UInt16 ConstantPoolCount;
-  IConstantPool[] ConstantPool;
+  IConstantPool[]? ConstantPool;
 
   UInt16 InterfacesCount;
-  UInt16[] Interfaces;
+  UInt16[]? Interfaces;
 
   UInt16 FieldsCount;
-  FieldsInfo[] Fields;
+  FieldsInfo[]? Fields;
 
   UInt16 MethodsCount;
-  MethodInfo[] Methods; 
+  MethodInfo[]? Methods; 
 
   UInt16 AttributesCount;
-  AttributeInfo[] Attributes;
+  AttributeInfo[]? Attributes;
 
   /// <summary>
-  /// 
+  /// The constructor for a Java class file
   /// </summary>
+  /// <param name="classFilePath"> The path to the class file being parsed </param>
   public JavaClass(string classFilePath) {
     Int32 pointer = 0;
     byte[] bytes = File.ReadAllBytes(classFilePath);
 
     // Should always be equal 0xCAFEBABE
-    MagicNumber = BytesToUInt32(bytes.Skip(pointer).Take(4).ToArray());
+    MagicNumber = BytesToUInt32(bytes.Skip(pointer).Take(4));
     pointer += 4;
     if (MagicNumber != JAVA_CLASS_MAGIC_NUMBER)
       throw new InvalidDataException($"The data in the magic number does not match the know Java class file magic number.{System.Environment.NewLine}The parsor found: {MagicNumber}, but excpected: {JAVA_CLASS_MAGIC_NUMBER}");
 
     // Get both the minor and major versions of the file, used
     // to figure out if a function is supported later down the line
-    MinorVersion = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    MinorVersion = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    MajorVersion = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    MajorVersion = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
 
     // Gets the constant pool count, and inits the constant pool
-    ConstantPoolCount = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    ConstantPoolCount = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    ConstantPool = new IConstantPool[ConstantPoolCount-1];
-    // Fills the ConstantPool array with the files constants
-    for (int i = 0; i < ConstantPoolCount; i++) {
-      byte constantPoolTag = bytes.Skip(pointer).Take(1).First();
-      pointer++;
-      IConstantPool newConstant = ParseConstantPoolTag(constantPoolTag, ref pointer, bytes);
-      ConstantPool[i] = newConstant;
+    if (ConstantPoolCount > 0) {
+      ConstantPool = new IConstantPool[ConstantPoolCount-1];
+      // Fills the ConstantPool array with the files constants
+      for (int i = 0; i < ConstantPoolCount-1; i++) {
+        byte constantPoolTag = bytes.Skip(pointer).Take(1).First();
+        pointer++;
+        IConstantPool newConstant = ParseConstantPoolTag(constantPoolTag, ref pointer, bytes);
+        ConstantPool[i] = newConstant;
+      }
     }
 
     // Gets the AccessFlag from
-    AccessFlags = (E_AccessFlags)BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    AccessFlags = (E_AccessFlags)BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
 
     // Gets the this class and super class from the Java class file
-    ThisClass = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    ThisClass = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    SuperClass = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    SuperClass = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
 
     // Gets the InterfaceCount and sets the Interfaces array to be InterfaceCount-1
-    InterfacesCount = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    InterfacesCount = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    Interfaces = new UInt16[InterfacesCount-1];
-    throw new NotImplementedException();
+    if (InterfacesCount > 0) {
+      Interfaces = new UInt16[InterfacesCount-1];
+    //throw new NotImplementedException();
+    }
 
     // Gets the FieldsCount variable and sets the Fields array to be of size FieldsCount-1
-    FieldsCount = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    FieldsCount = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    Fields = new FieldsInfo[FieldsCount-1];
-    throw new NotImplementedException();
+    if (FieldsCount > 0) {
+      Fields = new FieldsInfo[FieldsCount-1];
+      // throw new NotImplementedException();
+    }
 
     // Gets the MethodsCount variable and sets the Methods array to be of size MethodsCount-1
-    MethodsCount = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    MethodsCount = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    Methods = new MethodInfo[MethodsCount-1];
-    throw new NotImplementedException();
+    if (MethodsCount > 0) {
+      Methods = new MethodInfo[MethodsCount-1];
+      // throw new NotImplementedException();
+    }
 
     // Gets the AttributesCount variable and sets the Attributes array to be of size AttributesCount-1
-    AttributesCount = BytesToUInt16(bytes.Skip(pointer).Take(2).ToArray());
+    AttributesCount = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    Attributes = new AttributeInfo[AttributesCount-1];
-    throw new NotImplementedException();
+    if (AttributesCount > 0) {
+      Attributes = new AttributeInfo[AttributesCount-1];
+      // throw new NotImplementedException();
+    }
   }
 
   /// <summary>
-  /// 
+  /// Converts an IEnumerable of 2 bytes to an UInt16
   /// </summary>
-  private UInt16 BytesToUInt16(byte[] input) {
+  /// <param name="n"> The IEnumerable to be converted into an UInt16 </param>
+  private UInt16 BytesToUInt16(IEnumerable<byte> n) {
+    byte[] input = n.ToArray();
     UInt16 r = 0;
     for (int i = 0; i< 2; i++) {
       r = (UInt16)(r << 8);
@@ -117,9 +131,11 @@ public class JavaClass {
   }
 
   /// <summary>
-  /// 
+  /// Converts an IEnumerable of 4 bytes to an UInt32
   /// </summary>
-  private UInt32 BytesToUInt32(byte[] input) {
+  /// <param name="n"> The IEnumerable to be converted into an UInt32 </param>
+  private UInt32 BytesToUInt32(IEnumerable<byte> n) {
+    byte[] input = n.ToArray();
     UInt32 r = 0;
     for (int i = 0; i< 4; i++) {
       r = r << 8;
@@ -232,7 +248,18 @@ public class JavaClass {
     return result;
   }
 
+  /// <summary>
+  /// Gets all the bytes for an utf-8 constant pool object
+  /// </summary>
+  /// <param name="result"> A reference to the ConstantPoolUtf8Info object </param>
+  /// <param name="pointer"> A reference to the global array poiner </param>
+  /// <param name="bytes"> The array of bytes from the file </param>
   private void GetUtf8Bytes(ref ConstantPoolUtf8Info result, ref int pointer, byte[] bytes) {
-    throw new NotImplementedException();
+    for (int i = 0; i < result.Length; i++) {
+      byte b = bytes.Skip(pointer).First();
+      pointer++;
+      result.AddToByteArray(b);
+    }
+    return;
   }
 }

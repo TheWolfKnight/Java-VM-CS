@@ -6,15 +6,15 @@ namespace CS_Java_VM.Src.Java;
 
 #region InterfaceDefinition
 public interface IConstantPool {
-  public ushort GetByteSize();
+  ushort GetByteSize();
 }
 #endregion
 
 #region  GenericPoolDefinition
 public class ConstantPoolGeneric: IConstantPool {
   public const ushort ByteSize = 2;
-  E_ConstantPoolTag Tag;
-  byte[] Info;
+  public E_ConstantPoolTag Tag;
+  public byte[] Info;
 
   public ConstantPoolGeneric(byte tag, byte[] info) {
     Tag = (E_ConstantPoolTag)tag;
@@ -35,8 +35,8 @@ public class ConstantPoolGeneric: IConstantPool {
 #region MajorPoolDefinitions
 public class ConstantPoolClass: IConstantPool {
   public const ushort ByteSize = 3;
-  E_ConstantPoolTag Tag;
-  UInt16 NameIndex;
+  public E_ConstantPoolTag Tag;
+  public UInt16 NameIndex;
 
   public ConstantPoolClass(byte tag, UInt16 nameIndex) {
     Tag = (E_ConstantPoolTag)tag;
@@ -55,9 +55,9 @@ public class ConstantPoolClass: IConstantPool {
 
 public class ConstantPoolRef: IConstantPool {
   public const ushort ByteSize = 5;
-  E_ConstantPoolTag Tag;
-  UInt16 ClassIndex;
-  UInt16 NameAndTypeIndex;
+  public E_ConstantPoolTag Tag;
+  public UInt16 ClassIndex;
+  public UInt16 NameAndTypeIndex;
 
   public ConstantPoolRef(byte tag, UInt16 classIndex, UInt16 nameAndTypeIndex) {
     Tag = (E_ConstantPoolTag)tag;
@@ -78,8 +78,8 @@ public class ConstantPoolRef: IConstantPool {
 
 public class ConstantPoolString: IConstantPool {
   public const ushort ByteSize = 3;
-  E_ConstantPoolTag Tag;
-  UInt16 StringIndex;
+  public E_ConstantPoolTag Tag;
+  public UInt16 StringIndex;
 
   public ConstantPoolString(byte tag, UInt16 stringIndex) {
     Tag = (E_ConstantPoolTag)tag;
@@ -98,8 +98,8 @@ public class ConstantPoolString: IConstantPool {
 
 public class ConstantPoolNumberInfo: IConstantPool {
   public const ushort ByteSize = 5;
-  E_ConstantPoolTag Tag;
-  UInt32 Bytes;
+  public E_ConstantPoolTag Tag;
+  public UInt32 Bytes;
 
   public ConstantPoolNumberInfo(byte tag, UInt32 bytes) {
     Tag = (E_ConstantPoolTag)tag;
@@ -118,8 +118,8 @@ public class ConstantPoolNumberInfo: IConstantPool {
 
 public class ConstantPoolLongDoubleInfo: IConstantPool {
   public const ushort ByteSize = 9;
-  E_ConstantPoolTag Tag;
-  UInt32 HighBytes, LowBytes;
+  public E_ConstantPoolTag Tag;
+  public UInt32 HighBytes, LowBytes;
 
   public ConstantPoolLongDoubleInfo(byte tag, UInt32 highBytes, UInt32 lowBytes) {
     Tag = (E_ConstantPoolTag)tag;
@@ -140,9 +140,9 @@ public class ConstantPoolLongDoubleInfo: IConstantPool {
 
 public class ConstantPoolNameAndTypeInfo: IConstantPool {
   public const ushort ByteSize = 5;
-  E_ConstantPoolTag Tag;
-  UInt16 NameIndex;
-  UInt16 DescriptorIndex;
+  public E_ConstantPoolTag Tag;
+  public UInt16 NameIndex;
+  public UInt16 DescriptorIndex;
 
   public ConstantPoolNameAndTypeInfo(byte tag, UInt16 nameIndex, UInt16 descriptorIndex) {
     Tag = (E_ConstantPoolTag)tag;
@@ -165,10 +165,9 @@ public class ConstantPoolUtf8Info: IConstantPool {
   private const ushort AssuredByteSize = 3;
   private uint ByteArrayPointer = 0;
 
-  E_ConstantPoolTag Tag;
-  UInt16 Length;
-
-  byte[] Bytes;
+  public E_ConstantPoolTag Tag;
+  public UInt16 Length;
+  public byte[] Bytes;
 
   public ConstantPoolUtf8Info(byte tag, UInt16 length) {
     Tag = (E_ConstantPoolTag)tag;
@@ -197,9 +196,9 @@ public class ConstantPoolUtf8Info: IConstantPool {
 
 public class ConstantPoolMethodHandleInfo: IConstantPool {
   public const ushort ByteSize = 4;
-  E_ConstantPoolTag Tag;
-  E_ReferenceKind ReferenceKind;
-  UInt16 ReferenceIndex;
+  public E_ConstantPoolTag Tag;
+  public E_ReferenceKind ReferenceKind;
+  public UInt16 ReferenceIndex;
 
   public ConstantPoolMethodHandleInfo(byte tag, byte referenceKind, UInt16 referenceIndex) {
     Tag = (E_ConstantPoolTag)tag;
@@ -220,8 +219,8 @@ public class ConstantPoolMethodHandleInfo: IConstantPool {
 
 public class ConstantPoolMethodTypeInfo: IConstantPool {
   public const ushort ByteSize = 3;
-  E_ConstantPoolTag Tag;
-  UInt16 DescriptorIndex;
+  public E_ConstantPoolTag Tag;
+  public UInt16 DescriptorIndex;
 
   public ConstantPoolMethodTypeInfo(byte tag, UInt16 descriptorIndex) {
     Tag = (E_ConstantPoolTag)tag;
@@ -240,9 +239,9 @@ public class ConstantPoolMethodTypeInfo: IConstantPool {
 
 public class ConstantPoolDynamicInfo: IConstantPool {
   public const ushort ByteSize = 5;
-  E_ConstantPoolTag Tag;
-  UInt16 BootstrapMethodAttrIndex;
-  UInt16 NameAndTypeIndex;
+  public E_ConstantPoolTag Tag;
+  public UInt16 BootstrapMethodAttrIndex;
+  public UInt16 NameAndTypeIndex;
 
   public ConstantPoolDynamicInfo(byte tag, UInt16 bootstrapMethodAttrIndex, UInt16 nameAndTypeIndex) {
     Tag = (E_ConstantPoolTag)tag;
@@ -263,8 +262,8 @@ public class ConstantPoolDynamicInfo: IConstantPool {
 
 public class ConstantPoolPackageModuleInfo: IConstantPool {
   public const ushort ByteSize = 3;
-  E_ConstantPoolTag Tag;
-  UInt16 NameIndex;
+  public E_ConstantPoolTag Tag;
+  public UInt16 NameIndex;
 
   public ConstantPoolPackageModuleInfo(byte tag, UInt16 nameIndex) {
     Tag = (E_ConstantPoolTag)tag;
