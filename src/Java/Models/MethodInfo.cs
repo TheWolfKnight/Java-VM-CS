@@ -1,14 +1,15 @@
 using CS_Java_VM.Src.Java.Constants;
 
-using System.Collections.Generic;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace CS_Java_VM.Src.Java;
+namespace CS_Java_VM.Src.Java.Models;
 
 public class MethodInfo {
   private int ArrayPointer = 0;
 
-  public List<E_AccessFlags> AccessFlags;
+  public UInt16 AccessFlags;
   public UInt16 NameIndex;
   public UInt16 DescriptorIndex;
   public UInt16 AttributesCount;
@@ -24,7 +25,7 @@ public class MethodInfo {
     UInt16 descriptorIndex,
     UInt16 attributesCount
   ) {
-    AccessFlags = ParseAccessFlagsMask(accessFlagsMask);
+    AccessFlags = accessFlagsMask;
     NameIndex = nameIndex;
     DescriptorIndex = descriptorIndex;
     AttributesCount = attributesCount;
@@ -43,27 +44,46 @@ public class MethodInfo {
     ArrayPointer++;
   }
 
+  #region Unused region
+
   /// <summary>
   /// Converts the access flags mask into the desired flags
   /// </summary>
   /// <param name="accessFlags"> The access flags used to figure out which flags should be set </param>
-  private List<E_AccessFlags> ParseAccessFlagsMask(UInt16 accessFlags) {
-    List<E_AccessFlags> result = new List<E_AccessFlags>();
+  #pragma warning disable
+  private List<E_MethodAccessFlags> ParseAccessFlagsMask(UInt16 accessFlags) {
+    throw new Exception("Not in use");
+    List<E_MethodAccessFlags> result = new List<E_MethodAccessFlags>();
 
     const UInt16 visibilityMask = 0x000F;
     const UInt16 finalityStausMask = 0x00F0;
     const UInt16 declarationTypeMask = 0x0F00;
     const UInt16 syntheticMask = 0xF000;
 
-    result.Add((E_AccessFlags)(accessFlags & visibilityMask));
-    result.Add((E_AccessFlags)(accessFlags & finalityStausMask));
-    result.Add((E_AccessFlags)(accessFlags & declarationTypeMask));
+    result.Add((E_MethodAccessFlags)(accessFlags & visibilityMask));
+    result.Add((E_MethodAccessFlags)(accessFlags & finalityStausMask));
+    result.Add((E_MethodAccessFlags)(accessFlags & declarationTypeMask));
 
     UInt16 isSynthetic = (UInt16)(accessFlags & syntheticMask);
     if (isSynthetic != 0x0000)
-      result.Add(E_AccessFlags.ACC_SYNTHETIC);
+      result.Add(E_MethodAccessFlags.ACC_SYNTHETIC);
 
     return result;
   }
 
+  private string FlagsToString() {
+    throw new Exception("Not in use");
+    string result = string.Empty;
+    return result;
+  }
+
+  #pragma warning restore
+
+  #endregion
+
+  public override string ToString()
+  {
+    string attributes = string.Join($",{Environment.NewLine}", Attributes.Select(attr => attr.ToString()));
+    return $"MethodInfo(AccessFlags={AccessFlags},{Environment.NewLine}NameIndex={NameIndex},{Environment.NewLine}DescriptorIndex={DescriptorIndex},{Environment.NewLine}AttributesCount={{{AttributesCount}}},{Environment.NewLine}Attributes={attributes})";
+  }
 }

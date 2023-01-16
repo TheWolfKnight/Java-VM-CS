@@ -6,13 +6,13 @@ namespace CS_Java_VM.Src.Java.Union;
 
 #region Interface
 
-public interface IVerificationType {}
+public interface IVerificationTypeUnion {}
 
 #endregion
 
 #region BaseClassDefinition
 
-public class VerificationTypeBase: IVerificationType {
+public class VerificationTypeBase: IVerificationTypeUnion {
   public E_VerificationTypeInfo Tag;
 
   public VerificationTypeBase(byte tag) {
@@ -28,7 +28,7 @@ public class VerificationTypeBase: IVerificationType {
 
 #region SpecialClassDefiniton
 
-public class ObjectVerificationType: VerificationTypeBase, IVerificationType {
+public class ObjectVerificationType: VerificationTypeBase, IVerificationTypeUnion {
   public UInt16 CPoolIndex;
 
   public ObjectVerificationType(byte tag, UInt16 cPoolIndex) : base(tag) {
@@ -40,7 +40,7 @@ public class ObjectVerificationType: VerificationTypeBase, IVerificationType {
   }
 }
 
-public class UninitializedVariableVerificationType: VerificationTypeBase, IVerificationType {
+public class UninitializedVariableVerificationType: VerificationTypeBase, IVerificationTypeUnion {
   public UInt16 Offset;
 
     public UninitializedVariableVerificationType(byte tag, UInt16 offset) : base(tag) {

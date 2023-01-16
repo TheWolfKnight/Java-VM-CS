@@ -1,4 +1,7 @@
 using CS_Java_VM.Src.Java.Constants;
+using CS_Java_VM.Src.Java.Models;
+
+using System.Runtime.CompilerServices;
 
 using System.Linq;
 using System.IO;
@@ -19,7 +22,7 @@ public class JavaClass {
   UInt32 MagicNumber;
 
   UInt16 MinorVersion, MajorVersion;
-  E_AccessFlags AccessFlags;
+  UInt16 AccessFlags;
 
   UInt16 ThisClass, SuperClass;
 
@@ -74,7 +77,7 @@ public class JavaClass {
     }
 
     // Gets the AccessFlag from
-    AccessFlags = (E_AccessFlags)BytesToUInt16(bytes.Skip(pointer).Take(2));
+    AccessFlags = BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
 
     // Gets the this class and super class from the Java class file
@@ -148,7 +151,7 @@ public class JavaClass {
   }
 
   /// <summary>
-  /// Handels the parsing for the tags, this will not icroment the pointer globaly
+  /// Handels the parsing for the tags, this will incroment the pointer globaly
   /// </summary>
   /// <param name="tag"> The tag that is being parsed this round </param>
   /// <param name="pointer"> The current position of the array pointer </param>

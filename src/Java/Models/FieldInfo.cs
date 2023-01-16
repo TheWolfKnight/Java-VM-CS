@@ -4,11 +4,11 @@ using CS_Java_VM.Src.Java.Constants;
 using System.Collections.Generic;
 using System;
 
-namespace CS_Java_VM.Src.Java;
+namespace CS_Java_VM.Src.Java.Models;
 
 public class FieldsInfo {
   private int ArrayPointer = 0;
-  List<E_AccessFlags> AccessFlags;
+  UInt16 AccessFlags;
   UInt16 NameIndex;
   UInt16 DescriptorIndex;
   UInt16 AttributesCount;
@@ -16,7 +16,7 @@ public class FieldsInfo {
   IAttributeInfo[] Attributes;
 
   public FieldsInfo(UInt16 accessFlags, UInt16 nameIndex, UInt16 descriptorIndex, UInt16 attributesCount) {
-    AccessFlags = ParseAccessFlagsMask(accessFlags);
+    AccessFlags = accessFlags;
     NameIndex = nameIndex;
     DescriptorIndex = descriptorIndex;
     AttributesCount = attributesCount;
@@ -39,23 +39,25 @@ public class FieldsInfo {
   /// Converts the access flags mask into the desired flags
   /// </summary>
   /// <param name="accessFlags"> The access flags used to figure out which flags should be set </param>
-  private List<E_AccessFlags> ParseAccessFlagsMask(UInt16 accessFlags) {
-    List<E_AccessFlags> result = new List<E_AccessFlags>();
+  #pragma warning disable
+  private List<E_FieldAccessFlags> ParseAccessFlagsMask(UInt16 accessFlags) {
+    throw new Exception("Not in use");
+    List<E_FieldAccessFlags> result = new List<E_FieldAccessFlags>();
 
     const UInt16 visibilityMask = 0x000F;
     const UInt16 finalityStausMask = 0x00F0;
     const UInt16 declarationTypeMask = 0x0F00;
     const UInt16 syntheticMask = 0xF000;
 
-    result.Add((E_AccessFlags)(accessFlags & visibilityMask));
-    result.Add((E_AccessFlags)(accessFlags & finalityStausMask));
-    result.Add((E_AccessFlags)(accessFlags & declarationTypeMask));
+    result.Add((E_FieldAccessFlags)(accessFlags & visibilityMask));
+    result.Add((E_FieldAccessFlags)(accessFlags & finalityStausMask));
+    result.Add((E_FieldAccessFlags)(accessFlags & declarationTypeMask));
 
     UInt16 isSynthetic = (UInt16)(accessFlags & syntheticMask);
     if (isSynthetic != 0x0000)
-      result.Add(E_AccessFlags.ACC_SYNTHETIC);
+      result.Add(E_FieldAccessFlags.ACC_SYNTHETIC);
 
     return result;
   }
-
+  #pragma warning restore
 }
