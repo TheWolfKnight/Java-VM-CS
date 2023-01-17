@@ -288,6 +288,8 @@ public class RuntimeVisibleAnnotationsAttribute: AttributeGeneric, IAttributeInf
   }
 }
 
+
+
 #endregion
 
 #region Structures
