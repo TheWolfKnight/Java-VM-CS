@@ -104,7 +104,7 @@ public class StackMapTableAttribute: AttributeGeneric, IAttributeInfo {
 
   public void AddToEntrysArray(IStackMapFrameUnion entry) {
     if (ArrayPointer == NumberOfEntrys)
-      throw new Exception("Could not add the entry to entryes, out of bounds");
+      throw new IndexOutOfRangeException("Could not add the entry to entryes, out of bounds");
 
     Entries[ArrayPointer] = entry;
     ArrayPointer++;
@@ -125,7 +125,7 @@ public class ExceptionAttribute: AttributeGeneric, IAttributeInfo {
 
   public void AddExceptionsIndexToArray(UInt16 index) {
     if (ArrayPointer == NumberOFExceptions)
-      throw new Exception("Could not add the entry to entryes, out of bounds");
+      throw new IndexOutOfRangeException("Could not add the entry to entryes, out of bounds");
 
     ExceptionIndexTable[ArrayPointer] = index;
     ArrayPointer++;
@@ -146,7 +146,7 @@ public class InnerClassesAttribute: AttributeGeneric, IAttributeInfo {
 
   public void AddInnerClassToArray(UInt16 innerClassInfoIndex, UInt16 outerClassInfoIndex, UInt16 innereNameIndex, UInt16 outerNameIndex) {
     if (ArrayPointer == NumberOfClasses)
-      throw new Exception("Could not add the entry to entryes, out of bounds");
+      throw new IndexOutOfRangeException("Could not add the entry to entryes, out of bounds");
 
     Classes[ArrayPointer] = new InnerClass(innerClassInfoIndex, outerClassInfoIndex, innereNameIndex, outerNameIndex);
     ArrayPointer++;
@@ -193,7 +193,7 @@ public class SourceDebugExtensionAttribute: AttributeGeneric, IAttributeInfo {
 
   public void AddDebugExtensionToArray(byte extension) {
     if (ArrayPointer == AttributeLength)
-      throw new Exception("Could not add the entry to entryes, out of bounds");
+      throw new IndexOutOfRangeException("Could not add the entry to entryes, out of bounds");
 
     DebugExtension[ArrayPointer] = extension;
     ArrayPointer++;
@@ -214,7 +214,7 @@ public class LineNumberTableAttribute: AttributeGeneric, IAttributeInfo {
 
   public void AddLineNumberToArray(UInt16 startPc, UInt16 lineNumber) {
     if (ArrayPointer == LineNumberTableLength)
-      throw new Exception("Index out of bounds for the array");
+      throw new IndexOutOfRangeException("Index out of bounds for the array");
 
     LineNumberTable[ArrayPointer] = new LineNumber(startPc, lineNumber);
     ArrayPointer++;
@@ -235,7 +235,7 @@ public class LocalVariableTableAttribute: AttributeGeneric, IAttributeInfo {
 
   public void AddLocalVariableToArray(UInt16 startPc, UInt16 length, UInt16 nameIndex, UInt16 descriptorIndex, UInt16 index) {
     if (ArrayPointer == LocalVariableTableLength)
-      throw new Exception("Could not push to array as the indexer overflowed");
+      throw new IndexOutOfRangeException("Could not push to array as the indexer overflowed");
 
     LocalVariableTable[ArrayPointer] = new LocalVariable(startPc, length, nameIndex, descriptorIndex, index);
     ArrayPointer++;
@@ -256,7 +256,7 @@ public class LocalVariableTypeTableAttribute: AttributeGeneric, IAttributeInfo {
 
   public void AddLocaleVariabelTypeToArray(UInt16 startPc, UInt16 length, UInt16 nameIndex, UInt16 signatureIndex, UInt16 index) {
     if (ArrayPointer == LocalVariableTypeTableLength)
-      throw new Exception("Could not push to array as the indexer overflowed");
+      throw new IndexOutOfRangeException("Could not push to array as the indexer overflowed");
 
     LocalVariableTypeTable[ArrayPointer] = new LocalVariable(startPc, length, nameIndex, signatureIndex, index);
     ArrayPointer++;
@@ -281,18 +281,133 @@ public class RuntimeVisibleAnnotationsAttribute: AttributeGeneric, IAttributeInf
 
   public void AddAnnotationToArray(Annotation annotation) {
     if (ArrayPointer == NumAnnotations)
-      throw new Exception("Could not push to array as the indexer overflowed");
+      throw new IndexOutOfRangeException("Could not push to array as the indexer overflowed");
 
     Annotations[ArrayPointer] = annotation;
     ArrayPointer++;
   }
 }
 
+public class RuntimeInvisibleAnnotationsAttribute: AttributeGeneric, IAttributeInfo {
+  private int ArrayPointer = 0;
 
+  public UInt16 NumAnnotations;
+  public Annotation[] Annotations;
+
+  public RuntimeInvisibleAnnotationsAttribute(UInt16 attriubteNameIndex, UInt32 attributeLength, UInt16 numAnnotations) : base(attriubteNameIndex, attributeLength) {
+    NumAnnotations = numAnnotations;
+
+    Annotations = new Annotation[numAnnotations];
+  }
+
+  public void AddAnnotationToArray(Annotation annotation) {
+    if (ArrayPointer == NumAnnotations)
+      throw new IndexOutOfRangeException("Could not push to Annotations array as it is full");
+
+    Annotations[ArrayPointer] = annotation;
+    ArrayPointer++;
+  }
+}
+
+public class RuntimeVisibleParameterAnnotationsAttribute: AttributeGeneric, IAttributeInfo {
+  private int ArrayPointer = 0;
+
+  public byte NumParameters;
+  public ParameterAnnotation[] ParameterAnnotations;
+
+  public RuntimeVisibleParameterAnnotationsAttribute(UInt16 attributeNameIndex, UInt32 attributeLength, byte numAnnotations) : base(attributeNameIndex, attributeLength) {
+    NumParameters = numAnnotations;
+
+    ParameterAnnotations = new ParameterAnnotation[numAnnotations];
+  }
+
+  public void AddParameterAnnotationToArray(ParameterAnnotation annotation) {
+    if (ArrayPointer == NumParameters)
+      throw new IndexOutOfRangeException("Could not push to ParameterAnnotations array, as it is full");
+
+    ParameterAnnotations[ArrayPointer] = annotation;
+    ArrayPointer++;
+  }
+}
+
+public class RuntimeInvisibleParameterAnnotationsAttribute: AttributeGeneric, IAttributeInfo {
+  private int ArrayPointer = 0;
+
+  public byte NumParameters;
+  public ParameterAnnotation[] ParameterAnnotations;
+
+  public RuntimeInvisibleParameterAnnotationsAttribute(UInt16 attributeNameIndex, UInt32 attributeLength, byte numAnnotations) : base(attributeNameIndex, attributeLength) {
+    NumParameters = numAnnotations;
+
+    ParameterAnnotations = new ParameterAnnotation[numAnnotations];
+  }
+
+  public void AddParameterAnnotationToArray(ParameterAnnotation annotation) {
+    if (ArrayPointer == NumParameters)
+      throw new IndexOutOfRangeException("Could not push to ParameterAnnotations array, as it is full");
+
+    ParameterAnnotations[ArrayPointer] = annotation;
+    ArrayPointer++;
+  }
+}
+
+public class AnnotationDefaultAttribute: AttributeGeneric, IAttributeInfo {
+
+  public ElementValue DefaultValue;
+
+  public AnnotationDefaultAttribute(UInt16 attributeNameIndex, UInt32 attributeLength, ElementValue defaultValue) : base(attributeNameIndex, attributeLength) {
+    DefaultValue = defaultValue;
+  }
+}
+
+public class BootstrapMethodAttribute: AttributeGeneric, IAttributeInfo {
+  private int ArrayPointer = 0;
+
+  public UInt16 NumBootstrapMethods;
+  public BootstrapMethod[] BootstrapMethods;
+
+  public BootstrapMethodAttribute(UInt16 attributeNameIndex, UInt32 attributeLength, UInt16 numBootstrapMethods) : base(attributeNameIndex, attributeLength) {
+    NumBootstrapMethods = numBootstrapMethods;
+
+    BootstrapMethods = new BootstrapMethod[numBootstrapMethods];
+  }
+
+  public void AddBootstrapMethodToArray(BootstrapMethod method) {
+    if (ArrayPointer == NumBootstrapMethods)
+      throw new IndexOutOfRangeException("Could not push to BootstrapMethod to array, as the array is full");
+    
+    BootstrapMethods[ArrayPointer] = method;
+    ArrayPointer++;
+  }
+}
 
 #endregion
 
 #region Structures
+
+public struct BootstrapMethod {
+}
+
+public struct ParameterAnnotation {
+  private int ArrayPointer = 0;
+
+  public UInt16 NumAnnotations;
+  public Annotation[] Annotations;
+
+  public ParameterAnnotation(UInt16 numAnnotations) {
+    NumAnnotations = numAnnotations;
+
+    Annotations = new Annotation[numAnnotations];
+  }
+
+  public void AddAnnotationToArray(Annotation annotation) {
+    if (ArrayPointer == NumAnnotations)
+      throw new IndexOutOfRangeException("Could not push to Annotations array, as it is full");
+
+    Annotations[ArrayPointer] = annotation;
+    ArrayPointer++;
+  }
+}
 
 public struct LocalVariable {
   public UInt16 StartPc;
@@ -324,7 +439,7 @@ public struct InnerClass {
   public UInt16 InnerClassInfoIndex, OuterClassInfoIndex;
   public UInt16 InnerNameIndex;
   /// <summary>
-  /// The access level of the current class.<br/><i>NOTE:</i> this should later be turned into a E_JavaClassAccessFlags.
+  /// The access level of the current class.<br/><bold>NOTE:</bold> this should later be turned into a E_JavaClassAccessFlags.
   /// </summary>
   public UInt16 InnerClassAccessFlags;
 

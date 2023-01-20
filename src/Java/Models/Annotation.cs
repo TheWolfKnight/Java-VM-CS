@@ -1,3 +1,5 @@
+using CS_Java_VM.Src.Java.Constants;
+using CS_Java_VM.Src.Java.Union;
 
 using System;
 
@@ -20,7 +22,7 @@ public class Annotation {
 
   public void AddElementValueToArray(ElementValue element) {
     if (ArrayPointer == NumberOfValuePairs)
-      throw new Exception("Element out of index");
+      throw new IndexOutOfRangeException("Element out of index");
 
     ElementValuePairs[ArrayPointer] = element;
     ArrayPointer++;
@@ -29,4 +31,11 @@ public class Annotation {
 
 
 public struct ElementValue {
+  public E_ElementValueTags Tag;
+  public IElementValueUnion Value;
+
+  public ElementValue(byte tag, IElementValueUnion value) {
+    Tag = (E_ElementValueTags)tag;
+    Value = value;
+  }
 }

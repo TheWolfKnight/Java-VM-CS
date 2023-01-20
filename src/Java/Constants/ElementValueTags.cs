@@ -3,7 +3,7 @@ using System;
 
 namespace CS_Java_VM.Src.Java.Constants;
 
-public enum E_AnnotationTags {
+public enum E_ElementValueTags {
   SRING = 0x73,
   ENUM_CONSTANT = 0x65,
   CLASS = 0x63,
