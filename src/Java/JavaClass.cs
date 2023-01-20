@@ -2,6 +2,7 @@ using CS_Java_VM.Src.Maths.Convertor;
 using CS_Java_VM.Src.Java.Constants;
 using CS_Java_VM.Src.Java.Models;
 
+using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using System;
@@ -81,6 +82,7 @@ public class JavaClass {
     // Gets the this class and super class from the Java class file
     ThisClass = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
+
     SuperClass = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
 
@@ -89,7 +91,7 @@ public class JavaClass {
     pointer += 2;
     if (InterfacesCount > 0) {
       Interfaces = new UInt16[InterfacesCount-1];
-    //throw new NotImplementedException();
+
     }
 
     // Gets the FieldsCount variable and sets the Fields array to be of size FieldsCount-1
@@ -120,6 +122,24 @@ public class JavaClass {
     }
   }
 
+
+  private void ValidateSuperClass(UInt16 superIndex) {
+    if (ConstantPool == null && superIndex > 0)
+      throw new Exception("The super class could not be indexed in the constant pool");
+
+    if (ConstantPool == null && superIndex == 0) {
+    }
+
+    if (ConstantPool == null)
+      throw new ArgumentNullException();
+
+    IConstantPool superClass = ConstantPool.ElementAt(superIndex);
+    if (superClass.GetTag() != E_ConstantPoolTag.CONSTANT_CLASS)
+      throw new Exception("The super class points to an element in the ConstantPool that is not an Class object");
+
+  }
+
+
   /// <summary>
   /// Handels the parsing for the tags, this will incroment the pointer globaly
   /// </summary>
@@ -130,7 +150,7 @@ public class JavaClass {
     IConstantPool? result = null;
 
     switch ((E_ConstantPoolTag)tag) {
-      case E_ConstantPoolTag.CONSTANT_Utf8:
+      case E_ConstantPoolTag.CONSTANT_UTF8:
         UInt16 utf8Length = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         result = new ConstantPoolUtf8Info(tag, utf8Length);
@@ -139,15 +159,15 @@ public class JavaClass {
         result = holder;
       break;
 
-      case E_ConstantPoolTag.CONSTANT_Integer:
-      case E_ConstantPoolTag.CONSTANT_Float:
+      case E_ConstantPoolTag.CONSTANT_INTEGER:
+      case E_ConstantPoolTag.CONSTANT_FLOAT:
         UInt32 numberBytes = Convertor.BytesToUInt32(bytes.Skip(pointer).Take(4));
         pointer += 4;
         result = new ConstantPoolNumberInfo(tag, numberBytes);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_Long:
-      case E_ConstantPoolTag.CONSTANT_Double:
+      case E_ConstantPoolTag.CONSTANT_LONG:
+      case E_ConstantPoolTag.CONSTANT_DOUBLE:
         UInt32 highBytes = Convertor.BytesToUInt32(bytes.Skip(pointer).Take(4));
         pointer += 4;
         UInt32 lowBytes = Convertor.BytesToUInt32(bytes.Skip(pointer).Take(4));
@@ -155,21 +175,21 @@ public class JavaClass {
         result = new ConstantPoolLongDoubleInfo(tag, highBytes, lowBytes);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_Class:
+      case E_ConstantPoolTag.CONSTANT_CLASS:
         UInt16 classNameIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         result = new ConstantPoolClass(tag, classNameIndex);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_String:
+      case E_ConstantPoolTag.CONSTANT_STRING:
         UInt16 stringIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         result = new ConstantPoolString(tag, stringIndex);
       break;
 
-      case E_ConstantPoolTag.CONSTNAT_Fieldref:
-      case E_ConstantPoolTag.CONSTANT_Methodref:
-      case E_ConstantPoolTag.CONSTANT_InterfaceMethodref:
+      case E_ConstantPoolTag.CONSTNAT_FIELDREF:
+      case E_ConstantPoolTag.CONSTANT_METHODREF:
+      case E_ConstantPoolTag.CONSTANT_INTERFACEMETHODREF:
         UInt16 classIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         UInt16 refNameAndTypeIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
@@ -177,7 +197,7 @@ public class JavaClass {
         result = new ConstantPoolRef(tag, classIndex, refNameAndTypeIndex);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_NameAndType:
+      case E_ConstantPoolTag.CONSTANT_NAMEANDTYPE:
         UInt16 nameAndTypeNameIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         UInt16 nameAndTypeDescriptorIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
@@ -185,7 +205,7 @@ public class JavaClass {
         result = new ConstantPoolNameAndTypeInfo(tag, nameAndTypeNameIndex, nameAndTypeDescriptorIndex);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_MethodHandle:
+      case E_ConstantPoolTag.CONSTANT_METHODHANDLE:
         E_ReferenceKind referenceKind = (E_ReferenceKind)bytes.Skip(pointer).First();
         pointer++;
         UInt16 referenceIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
@@ -193,14 +213,14 @@ public class JavaClass {
         result = new ConstantPoolMethodHandleInfo((E_ConstantPoolTag)tag, referenceKind, referenceIndex);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_MethodType:
+      case E_ConstantPoolTag.CONSTANT_METHODTYPE:
         UInt16 methodTypeDescriptorIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         result = new ConstantPoolMethodTypeInfo(tag, methodTypeDescriptorIndex);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_Dynamic:
-      case E_ConstantPoolTag.CONSTANT_InvokeDynamic:
+      case E_ConstantPoolTag.CONSTANT_DYNAMIC:
+      case E_ConstantPoolTag.CONSTANT_INVOKEDYNAMIC:
         UInt16 bootstrapMethodAttrIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         UInt16 dynamicNameAndTypeIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
@@ -208,8 +228,8 @@ public class JavaClass {
         result = new ConstantPoolDynamicInfo(tag, bootstrapMethodAttrIndex, dynamicNameAndTypeIndex);
       break;
 
-      case E_ConstantPoolTag.CONSTANT_Module:
-      case E_ConstantPoolTag.CONSTANT_Package:
+      case E_ConstantPoolTag.CONSTANT_MODULE:
+      case E_ConstantPoolTag.CONSTANT_PACKAGE:
         UInt16 packageModuleNameIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
         pointer += 2;
         result = new ConstantPoolPackageModuleInfo(tag, packageModuleNameIndex);
@@ -237,6 +257,26 @@ public class JavaClass {
       result.AddToByteArray(b);
     }
     return;
+  }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="pointer">  </param>
+  /// <param name="bytes">  </param>
+  private UInt16 GenerateInterface(ref int pointer, ref byte[] bytes) {
+    if (ConstantPool == null)
+      throw new ArgumentNullException("ConstantPool is currently null");
+
+    UInt16 interfaceIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+    pointer += 2;
+
+    IConstantPool poolObject = ConstantPool.ElementAt(interfaceIndex);
+    if (poolObject.GetTag() != E_ConstantPoolTag.CONSTANT_CLASS)
+      throw new Exception($"Unexpected ConstantPool tag.\r\nExpected tag: E_ConstantPoolTag.CONSTANT_CLASS\r\nGot: {poolObject.GetType()}");
+
+
+    return interfaceIndex;
   }
 
   /// <summary>

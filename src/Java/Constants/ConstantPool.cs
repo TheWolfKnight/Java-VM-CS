@@ -6,13 +6,12 @@ namespace CS_Java_VM.Src.Java;
 
 #region InterfaceDefinition
 public interface IConstantPool {
-  ushort GetByteSize();
+  E_ConstantPoolTag GetTag();
 }
 #endregion
 
 #region  GenericPoolDefinition
 public class ConstantPoolGeneric: IConstantPool {
-  public const ushort ByteSize = 2;
   public E_ConstantPoolTag Tag;
   public byte[] Info;
 
@@ -25,8 +24,8 @@ public class ConstantPoolGeneric: IConstantPool {
     Info = info;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 
 }
@@ -34,7 +33,6 @@ public class ConstantPoolGeneric: IConstantPool {
 
 #region MajorPoolDefinitions
 public class ConstantPoolClass: IConstantPool {
-  public const ushort ByteSize = 3;
   public E_ConstantPoolTag Tag;
   public UInt16 NameIndex;
 
@@ -48,13 +46,12 @@ public class ConstantPoolClass: IConstantPool {
     NameIndex = nameIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolRef: IConstantPool {
-  public const ushort ByteSize = 5;
   public E_ConstantPoolTag Tag;
   public UInt16 ClassIndex;
   public UInt16 NameAndTypeIndex;
@@ -71,13 +68,12 @@ public class ConstantPoolRef: IConstantPool {
     NameAndTypeIndex = nameAndTypeIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolString: IConstantPool {
-  public const ushort ByteSize = 3;
   public E_ConstantPoolTag Tag;
   public UInt16 StringIndex;
 
@@ -91,13 +87,12 @@ public class ConstantPoolString: IConstantPool {
     StringIndex = stringIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolNumberInfo: IConstantPool {
-  public const ushort ByteSize = 5;
   public E_ConstantPoolTag Tag;
   public UInt32 Bytes;
 
@@ -111,13 +106,12 @@ public class ConstantPoolNumberInfo: IConstantPool {
     Bytes = bytes;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolLongDoubleInfo: IConstantPool {
-  public const ushort ByteSize = 9;
   public E_ConstantPoolTag Tag;
   public UInt32 HighBytes, LowBytes;
 
@@ -133,13 +127,12 @@ public class ConstantPoolLongDoubleInfo: IConstantPool {
     LowBytes = lowBytes;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolNameAndTypeInfo: IConstantPool {
-  public const ushort ByteSize = 5;
   public E_ConstantPoolTag Tag;
   public UInt16 NameIndex;
   public UInt16 DescriptorIndex;
@@ -156,14 +149,13 @@ public class ConstantPoolNameAndTypeInfo: IConstantPool {
     DescriptorIndex = descriptorIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolUtf8Info: IConstantPool {
-  private const ushort AssuredByteSize = 3;
-  private uint ByteArrayPointer = 0;
+  private uint ArrayPointer = 0;
 
   public E_ConstantPoolTag Tag;
   public UInt16 Length;
@@ -182,20 +174,19 @@ public class ConstantPoolUtf8Info: IConstantPool {
   }
 
   public void AddToByteArray(byte n) {
-    if (ByteArrayPointer == Length)
+    if (ArrayPointer == Length)
       throw new IndexOutOfRangeException($"Could not push the element: b{n} to the array");
 
-    Bytes[ByteArrayPointer] = n;
-    ByteArrayPointer++;
+    Bytes[ArrayPointer] = n;
+    ArrayPointer++;
   }
 
-  public UInt16 GetByteSize() {
-    return (UInt16)(AssuredByteSize + Length);
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolMethodHandleInfo: IConstantPool {
-  public const ushort ByteSize = 4;
   public E_ConstantPoolTag Tag;
   public E_ReferenceKind ReferenceKind;
   public UInt16 ReferenceIndex;
@@ -212,13 +203,12 @@ public class ConstantPoolMethodHandleInfo: IConstantPool {
     ReferenceIndex = referenceIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolMethodTypeInfo: IConstantPool {
-  public const ushort ByteSize = 3;
   public E_ConstantPoolTag Tag;
   public UInt16 DescriptorIndex;
 
@@ -232,13 +222,12 @@ public class ConstantPoolMethodTypeInfo: IConstantPool {
     DescriptorIndex = descriptorIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolDynamicInfo: IConstantPool {
-  public const ushort ByteSize = 5;
   public E_ConstantPoolTag Tag;
   public UInt16 BootstrapMethodAttrIndex;
   public UInt16 NameAndTypeIndex;
@@ -255,13 +244,12 @@ public class ConstantPoolDynamicInfo: IConstantPool {
     NameAndTypeIndex = nameAndTypeIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 
 public class ConstantPoolPackageModuleInfo: IConstantPool {
-  public const ushort ByteSize = 3;
   public E_ConstantPoolTag Tag;
   public UInt16 NameIndex;
 
@@ -275,8 +263,8 @@ public class ConstantPoolPackageModuleInfo: IConstantPool {
     NameIndex = nameIndex;
   }
 
-  public UInt16 GetByteSize() {
-    return ByteSize;
+  public E_ConstantPoolTag GetTag() {
+    return Tag;
   }
 }
 

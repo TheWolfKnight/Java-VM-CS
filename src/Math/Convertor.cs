@@ -10,6 +10,8 @@ public static class Convertor {
   private const int EXPECTED_BYTE_COUNT_UINT64 = 8;
   private const int EXPECTED_BYTE_COUNT_UINT128 = 16;
 
+  #region Bytes to UInt convertors
+
   /// <summary>
   /// Converts an IEnumerable of 2 bytes to an UInt16
   /// </summary>
@@ -64,4 +66,24 @@ public static class Convertor {
     }
     return r;
   }
+
+  #endregion
+
+  #region Java number convertors
+
+  public static float UInt32ToJavaFloat(UInt32 input) {
+    int s = ((input >> 31) == 0) ? 1 : -1;
+    int e = (int)((input >> 23) & 0xFF);
+    int m = (int)((e == 0) ?
+                    (input & 0x7FFFFF) << 1 :
+                    (input & 0x7FFFFF) | 0x800000);
+
+    int h = s * m;
+    float h2 = (float)Math.Pow(2, (e-150));
+    return h * h2;
+  }
+
+
+  #endregion
+
 }
