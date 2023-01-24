@@ -5,10 +5,15 @@ using System.Diagnostics;
 namespace CS_Java_VM.Src.Maths.Convertor;
 
 public static class Convertor {
+
+  #region Byte constants
+
   private const int EXPECTED_BYTE_COUNT_UINT16 = 2;
   private const int EXPECTED_BYTE_COUNT_UINT32 = 4;
   private const int EXPECTED_BYTE_COUNT_UINT64 = 8;
   private const int EXPECTED_BYTE_COUNT_UINT128 = 16;
+
+  #endregion
 
   #region Bytes to UInt convertors
 
@@ -46,7 +51,6 @@ public static class Convertor {
 
   public static UInt64 BytesToUInt64(IEnumerable<byte> input) {
     Debug.Assert(input.Count(_ => true) == EXPECTED_BYTE_COUNT_UINT64, $"Expected to get an array of 8 items, got one with {input.Count(_ => true)} items");
-
 
     UInt64 r = 0;
     for (int i = 0; i < EXPECTED_BYTE_COUNT_UINT64; i++) {

@@ -127,7 +127,7 @@ public class JavaClass {
     if (ConstantPool == null && superIndex > 0)
       throw new Exception("The super class could not be indexed in the constant pool");
 
-    if (ConstantPool == null && superIndex == 0) {
+    if (superIndex == 0) {
     }
 
     if (ConstantPool == null)
@@ -136,7 +136,6 @@ public class JavaClass {
     IConstantPool superClass = ConstantPool.ElementAt(superIndex);
     if (superClass.GetTag() != E_ConstantPoolTag.CONSTANT_CLASS)
       throw new Exception("The super class points to an element in the ConstantPool that is not an Class object");
-
   }
 
 
