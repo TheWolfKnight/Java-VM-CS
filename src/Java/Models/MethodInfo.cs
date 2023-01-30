@@ -9,7 +9,7 @@ namespace CS_Java_VM.Src.Java.Models;
 public class MethodInfo {
   private int ArrayPointer = 0;
 
-  public UInt16 AccessFlags;
+  public List<E_MethodAccessFlags> AccessFlags;
   public UInt16 NameIndex;
   public UInt16 DescriptorIndex;
   public UInt16 AttributesCount;
@@ -20,12 +20,15 @@ public class MethodInfo {
   /// descriptor index, attributes count, and attributes array
   /// </summary>
   public MethodInfo(
-    UInt16 accessFlagsMask,
+    UInt16 accessFlags,
     UInt16 nameIndex,
     UInt16 descriptorIndex,
     UInt16 attributesCount
   ) {
-    AccessFlags = accessFlagsMask;
+    AccessFlags = ParseAccessFlags(accessFlags);
+    FlagsToString();
+
+
     NameIndex = nameIndex;
     DescriptorIndex = descriptorIndex;
     AttributesCount = attributesCount;
@@ -50,9 +53,7 @@ public class MethodInfo {
   /// Converts the access flags mask into the desired flags
   /// </summary>
   /// <param name="accessFlags"> The access flags used to figure out which flags should be set </param>
-  #pragma warning disable
-  private List<E_MethodAccessFlags> ParseAccessFlagsMask(UInt16 accessFlags) {
-    throw new Exception("Not in use");
+  private List<E_MethodAccessFlags> ParseAccessFlags(UInt16 accessFlags) {
     List<E_MethodAccessFlags> result = new List<E_MethodAccessFlags>();
 
     const UInt16 visibilityMask = 0x000F;
@@ -72,12 +73,18 @@ public class MethodInfo {
   }
 
   private string FlagsToString() {
-    throw new Exception("Not in use");
     string result = string.Empty;
+
+    foreach (E_MethodAccessFlags flag in AccessFlags) {
+      result += flag.ToString();
+      System.Console.WriteLine("Here");
+      System.Console.WriteLine(flag.ToString());
+    }
+
+    Environment.Exit(1);
+
     return result;
   }
-
-  #pragma warning restore
 
   #endregion
 

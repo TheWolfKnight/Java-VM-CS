@@ -8,7 +8,7 @@ namespace CS_Java_VM.Src.Java.Models;
 
 public class FieldsInfo {
   private int ArrayPointer = 0;
-  UInt16 AccessFlags;
+  List<E_FieldAccessFlags> AccessFlags;
   UInt16 NameIndex;
   UInt16 DescriptorIndex;
   UInt16 AttributesCount;
@@ -16,11 +16,13 @@ public class FieldsInfo {
   IAttributeInfo[] Attributes;
 
   public FieldsInfo(UInt16 accessFlags, UInt16 nameIndex, UInt16 descriptorIndex, UInt16 attributesCount) {
-    AccessFlags = accessFlags;
+    AccessFlags = ParseAccessFlags(accessFlags);
+    FlagsToString();
+
     NameIndex = nameIndex;
     DescriptorIndex = descriptorIndex;
     AttributesCount = attributesCount;
-    Attributes = new IAttributeInfo[attributesCount-1];
+    Attributes = new IAttributeInfo[attributesCount];
   }
 
   /// <summary>
@@ -39,9 +41,7 @@ public class FieldsInfo {
   /// Converts the access flags mask into the desired flags
   /// </summary>
   /// <param name="accessFlags"> The access flags used to figure out which flags should be set </param>
-  #pragma warning disable
-  private List<E_FieldAccessFlags> ParseAccessFlagsMask(UInt16 accessFlags) {
-    throw new Exception("Not in use");
+  private List<E_FieldAccessFlags> ParseAccessFlags(UInt16 accessFlags) {
     List<E_FieldAccessFlags> result = new List<E_FieldAccessFlags>();
 
     const UInt16 visibilityMask = 0x000F;
@@ -59,5 +59,18 @@ public class FieldsInfo {
 
     return result;
   }
-  #pragma warning restore
+
+  private string FlagsToString() {
+    string result = string.Empty;
+
+    foreach (E_FieldAccessFlags flag in AccessFlags) {
+      result += flag.ToString();
+      System.Console.WriteLine("here");
+      System.Console.WriteLine(flag.ToString());
+      Environment.Exit(1);
+    }
+
+    return result;
+  }
+
 }

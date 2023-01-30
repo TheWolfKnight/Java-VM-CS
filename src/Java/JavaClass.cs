@@ -9,6 +9,7 @@ using System;
 
 namespace CS_Java_VM.Src.Java;
 
+
 public class JavaClass {
   /// <summary>
   /// The constant magic number in the Java class file, this will preceed all other items in the file
@@ -91,7 +92,10 @@ public class JavaClass {
     pointer += 2;
     if (InterfacesCount > 0) {
       Interfaces = new UInt16[InterfacesCount-1];
-
+      for (int i = 0; i < InterfacesCount; ++i) {
+        Interfaces[i] = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+        pointer += 2;
+      }
     }
 
     // Gets the FieldsCount variable and sets the Fields array to be of size FieldsCount-1
@@ -99,7 +103,9 @@ public class JavaClass {
     pointer += 2;
     if (FieldsCount > 0) {
       Fields = new FieldsInfo[FieldsCount-1];
-      // throw new NotImplementedException();
+      for (int i = 0; i < FieldsCount; ++i) {
+        
+      }
     }
 
     // Gets the MethodsCount variable and sets the Methods array to be of size MethodsCount-1
@@ -121,7 +127,6 @@ public class JavaClass {
       // throw new NotImplementedException();
     }
   }
-
 
   private void ValidateSuperClass(UInt16 superIndex) {
     if (ConstantPool == null && superIndex > 0)
@@ -239,6 +244,31 @@ public class JavaClass {
 
     if (result == null)
       throw new Exception("Unrechable Code");
+
+    return result;
+  }
+
+  private FieldsInfo GenerateFieldsInfo(ref int pointer, ref byte[] bytes) {
+    FieldsInfo? result = null;
+
+    UInt16 accessFlags = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+    pointer += 2;
+    UInt16 nameIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+    pointer += 2;
+    UInt16 descriptorIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+    pointer += 2;
+    UInt16 attributesCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+    pointer += 2;
+
+    result = new FieldsInfo(accessFlags, nameIndex, descriptorIndex, attributesCount);
+
+    if (attributesCount > 0) {
+      IAttributeInfo attribute = GenerateAttributeInfo(ref pointer, ref bytes);
+      result.AddAttributeToAttributeArray(attribute);
+    }
+
+    if (result == null)
+      throw new ArgumentException("Could not generate fields info");
 
     return result;
   }
