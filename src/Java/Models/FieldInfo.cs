@@ -12,8 +12,7 @@ public class FieldsInfo {
   UInt16 NameIndex;
   UInt16 DescriptorIndex;
   UInt16 AttributesCount;
-
-  IAttributeInfo[] Attributes;
+  AttributeInfo[] Attributes;
 
   public FieldsInfo(UInt16 accessFlags, UInt16 nameIndex, UInt16 descriptorIndex, UInt16 attributesCount) {
     AccessFlags = ParseAccessFlags(accessFlags);
@@ -22,15 +21,15 @@ public class FieldsInfo {
     NameIndex = nameIndex;
     DescriptorIndex = descriptorIndex;
     AttributesCount = attributesCount;
-    Attributes = new IAttributeInfo[attributesCount];
+    Attributes = new AttributeInfo[attributesCount];
   }
 
   /// <summary>
   /// Adds a element to the Attributes array
   /// </summary>
   /// <param name="attribute"> The AttributeInfo instance that gets pushed to the Attributes array </param>
-  public void AddAttributeToAttributeArray(IAttributeInfo attribute) {
-    if (Attributes.Length == AttributesCount)
+  public void AddAttributeToAttributeArray(AttributeInfo attribute) {
+    if (ArrayPointer == AttributesCount)
       throw new IndexOutOfRangeException("Could not push the attribute to the Attributes array.");
 
     Attributes[ArrayPointer] = attribute;
@@ -65,12 +64,17 @@ public class FieldsInfo {
 
     foreach (E_FieldAccessFlags flag in AccessFlags) {
       result += flag.ToString();
-      System.Console.WriteLine("here");
-      System.Console.WriteLine(flag.ToString());
-      Environment.Exit(1);
     }
 
     return result;
+  }
+
+  public override string ToString()
+  {
+    string accessFlagsString = FlagsToString();
+    string attributesString = string.Join($",{Environment.NewLine}\t\t\t\t", Attributes.AsEnumerable());
+
+    return $"FieldsInfo(AccessFlags={accessFlagsString}, NameIndex={NameIndex}, DescriptorIndex={DescriptorIndex}),AttributesCount={AttributesCount},{Environment.NewLine}\t\t\tAttributes={attributesString})";
   }
 
 }

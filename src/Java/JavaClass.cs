@@ -39,7 +39,7 @@ public class JavaClass {
   MethodInfo[]? Methods; 
 
   UInt16 AttributesCount;
-  IAttributeInfo[]? Attributes;
+  AttributeInfo[]? Attributes;
 
   /// <summary>
   /// The constructor for a Java class file
@@ -90,42 +90,67 @@ public class JavaClass {
     // Gets the InterfaceCount and sets the Interfaces array to be InterfaceCount-1
     InterfacesCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    if (InterfacesCount > 0) {
-      Interfaces = new UInt16[InterfacesCount-1];
-      for (int i = 0; i < InterfacesCount; ++i) {
-        Interfaces[i] = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
-        pointer += 2;
-      }
+    Interfaces = new UInt16[InterfacesCount];
+    for (int i = 0; i < InterfacesCount; ++i) {
+      Interfaces[i] = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+      pointer += 2;
     }
 
     // Gets the FieldsCount variable and sets the Fields array to be of size FieldsCount-1
     FieldsCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    if (FieldsCount > 0) {
-      Fields = new FieldsInfo[FieldsCount-1];
-      for (int i = 0; i < FieldsCount; ++i) {
-        
-      }
+    Fields = new FieldsInfo[FieldsCount];
+    for (int i = 0; i < FieldsCount; ++i) {
+      FieldsInfo info = GenerateFieldsInfo(ref pointer, ref bytes);
+      Fields[i] = info;
     }
+
 
     // Gets the MethodsCount variable and sets the Methods array to be of size MethodsCount-1
     MethodsCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    if (MethodsCount > 0) {
-      Methods = new MethodInfo[MethodsCount-1];
-      for (int i = 0; i < MethodsCount; i++) {
-        MethodInfo newMethodInfo = GenerateMethodInfo(ref pointer, ref bytes);
-        Methods[i] = newMethodInfo;
-      }
+    Methods = new MethodInfo[MethodsCount];
+    for (int i = 0; i < MethodsCount; i++) {
+      MethodInfo newMethodInfo = GenerateMethodInfo(ref pointer, ref bytes);
+      Methods[i] = newMethodInfo;
     }
+
 
     // Gets the AttributesCount variable and sets the Attributes array to be of size AttributesCount-1
     AttributesCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    if (AttributesCount > 0) {
-      Attributes = new IAttributeInfo[AttributesCount-1];
-      // throw new NotImplementedException();
+    Attributes = new AttributeInfo[AttributesCount];
+    for (int i = 0; i < AttributesCount; ++i) {
+      AttributeInfo attribute = GenerateAttributeInfo(ref pointer, ref bytes);
+      Attributes[i] = attribute;
     }
+  }
+
+  private List<E_JavaClassAccessFlags> GenerateAccessFlags(UInt16 accessFlags) {
+    List<E_JavaClassAccessFlags> result = new List<E_JavaClassAccessFlags>();
+
+    const UInt16 visibilityMask     = 0x000F,
+                 finalityStatusMask = 0x00F0,
+                 definitionMask     = 0x0F00,
+                 typeMask           = 0xF000;
+
+    UInt16 visibility = (UInt16)(accessFlags & visibilityMask);
+    if (visibility != 0x0000)
+      result.Add((E_JavaClassAccessFlags)visibility);
+
+    UInt16 finalityStatus = (UInt16)(accessFlags & finalityStatusMask);
+    if (finalityStatus != 0x0000)
+      result.Add((E_JavaClassAccessFlags)finalityStatus);
+
+    UInt16 definition = (UInt16)(accessFlags & definitionMask);
+    if (definition != 0x0000)
+      result.Add((E_JavaClassAccessFlags)definition);
+
+    UInt16 type = (UInt16)(accessFlags & typeMask);
+    if (type != 0x0000)
+      result.Add((E_JavaClassAccessFlags)type);
+
+    return result;
   }
 
   private void ValidateSuperClass(UInt16 superIndex) {
@@ -263,7 +288,7 @@ public class JavaClass {
     result = new FieldsInfo(accessFlags, nameIndex, descriptorIndex, attributesCount);
 
     if (attributesCount > 0) {
-      IAttributeInfo attribute = GenerateAttributeInfo(ref pointer, ref bytes);
+      AttributeInfo attribute = GenerateAttributeInfo(ref pointer, ref bytes);
       result.AddAttributeToAttributeArray(attribute);
     }
 
@@ -326,7 +351,7 @@ public class JavaClass {
     MethodInfo result = new MethodInfo(accessFlags, nameIndex, descriptorIndex, attributesCount);
 
     for (int i = 0; i < attributesCount; i++) {
-      IAttributeInfo attributeInfo = GenerateAttributeInfo(ref pointer, ref bytes);
+      AttributeInfo attributeInfo = GenerateAttributeInfo(ref pointer, ref bytes);
       result.AddAttributeToAttributeArray(attributeInfo);
     }
 
@@ -334,11 +359,54 @@ public class JavaClass {
   }
 
   /// <summary>
-  /// Generates a new instance of the IAttributeInfo class
+  /// Generates a new instance of the AttributeInfo class
   /// </summary>
   /// <param name="pointer"> A reference to the current array pointer </param>
   /// <param name="byte"> A reference to the byte array </param>
-  private IAttributeInfo GenerateAttributeInfo(ref int pointer, ref byte[] bytes) {
-    throw new NotImplementedException();
+  private AttributeInfo GenerateAttributeInfo(ref int pointer, ref byte[] bytes) {
+    if (ConstantPool == null) {
+      throw new ArgumentNullException("The ConstantPool table is equal to null, there must be a ConstantPool table to get the AttributeInfo");
+    }
+
+    AttributeInfo? attributeInfo = null;
+
+    UInt16 nameIndexPointer = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+    pointer += 2;
+    IConstantPool item = ConstantPool[nameIndexPointer];
+
+    if (item.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8)
+      throw new ArgumentException("The type of the AttributeInfos name index must be a CONSTANTPOO_Utf8_Info");
+
+    UInt32 attributeLength = Convertor.BytesToUInt32(bytes.Skip(pointer).Take(4));
+    pointer += 4;
+    // WARNING: This is fucking stupid, as the non-negative value of UInt32
+    // can be greater than the non-negative value of an normal int.
+    IEnumerable<byte> info = bytes.Skip(pointer).Take((int)attributeLength);
+    pointer += (int)attributeLength;
+
+    attributeInfo = new AttributeInfo(nameIndexPointer, attributeLength, info);
+
+    if (attributeInfo == null)
+      throw new ArgumentNullException("The result variable can not be null");
+    return attributeInfo;
   }
+
+  public override string ToString()
+  {
+    string sep = $",{Environment.NewLine}\t\t";
+
+    string constantPoolString =
+        ConstantPool != null && ConstantPool.Length > 0 ? sep + string.Join(sep, ConstantPool.AsEnumerable()) : "";
+    string interfacesString =
+        Interfaces != null && Interfaces.Length > 0 ? sep + string.Join(sep, Interfaces.AsEnumerable()) : "";
+    string fieldsInfoString =
+        Fields != null && Fields.Length > 0 ? sep + string.Join(sep, Fields.AsEnumerable()) : "";
+    string methodsInfoString =
+        Methods != null && Methods.Length > 0 ? sep + string.Join(sep, Methods.AsEnumerable()) : "";
+    string attributesString =
+        Attributes != null && Attributes.Length > 0 ? sep + string.Join(sep, Attributes.AsEnumerable()) : "";
+
+    return $"JavaClass({Environment.NewLine}\tMagicNumber={MagicNumber}, AccessFlags=[{string.Join(", ", AccessFlags)}],{Environment.NewLine}\tMinorVersion={MinorVersion}, MajorVersion={MajorVersion}, ThisClass={ThisClass}, SuperClass={SuperClass},{Environment.NewLine}\tConstantPoolCount={ConstantPoolCount}, ConstantPool=[{constantPoolString}],{Environment.NewLine}\tInterfaceCount={InterfacesCount}, Interfaces=[{interfacesString}],{Environment.NewLine}\tFieldsCount={FieldsCount}, Fields=[{fieldsInfoString}],{Environment.NewLine}\tMethodsCount={MethodsCount}, Methods=[{methodsInfoString}],{Environment.NewLine}\tAttributesCount={AttributesCount}, Attributes=[{attributesString}])";
+  }
+
 }

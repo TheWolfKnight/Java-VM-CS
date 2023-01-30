@@ -1,12 +1,14 @@
 using System;
+using System.Text;
 
 using CS_Java_VM.Src.Java.Constants;
 
-namespace CS_Java_VM.Src.Java;
+namespace CS_Java_VM.Src.Java.Models;
 
 #region InterfaceDefinition
 public interface IConstantPool {
   E_ConstantPoolTag GetTag();
+  string ToString();
 }
 #endregion
 
@@ -26,6 +28,11 @@ public class ConstantPoolGeneric: IConstantPool {
 
   public E_ConstantPoolTag GetTag() {
     return Tag;
+  }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolGeneric(Info=[{string.Join(", ", Info)}])";
   }
 
 }
@@ -49,6 +56,12 @@ public class ConstantPoolClass: IConstantPool {
   public E_ConstantPoolTag GetTag() {
     return Tag;
   }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolClass(NameIndex={NameIndex})";
+  }
+
 }
 
 public class ConstantPoolRef: IConstantPool {
@@ -71,6 +84,11 @@ public class ConstantPoolRef: IConstantPool {
   public E_ConstantPoolTag GetTag() {
     return Tag;
   }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolRef(ClassIndex={ClassIndex}, NameAndTypeIndex={NameAndTypeIndex})";
+  }
 }
 
 public class ConstantPoolString: IConstantPool {
@@ -90,6 +108,11 @@ public class ConstantPoolString: IConstantPool {
   public E_ConstantPoolTag GetTag() {
     return Tag;
   }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolString(StringIndex={StringIndex})";
+  }
 }
 
 public class ConstantPoolNumberInfo: IConstantPool {
@@ -108,6 +131,11 @@ public class ConstantPoolNumberInfo: IConstantPool {
 
   public E_ConstantPoolTag GetTag() {
     return Tag;
+  }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolNumberInfo(Bytes={Bytes})";
   }
 }
 
@@ -130,6 +158,11 @@ public class ConstantPoolLongDoubleInfo: IConstantPool {
   public E_ConstantPoolTag GetTag() {
     return Tag;
   }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolLongDoubleInfo(HighBytes={HighBytes}, LowBytes={LowBytes})";
+  }
 }
 
 public class ConstantPoolNameAndTypeInfo: IConstantPool {
@@ -151,6 +184,11 @@ public class ConstantPoolNameAndTypeInfo: IConstantPool {
 
   public E_ConstantPoolTag GetTag() {
     return Tag;
+  }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolNameAndTypeInfo(NameIndex={NameIndex}, DescriptorIndex={DescriptorIndex})";
   }
 }
 
@@ -184,6 +222,11 @@ public class ConstantPoolUtf8Info: IConstantPool {
   public E_ConstantPoolTag GetTag() {
     return Tag;
   }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolUtf8Info(Length={Length}, Bytes=[{string.Join(", ", Bytes)}], StringRep={Encoding.Default.GetString(Bytes)})";
+  }
 }
 
 public class ConstantPoolMethodHandleInfo: IConstantPool {
@@ -206,6 +249,11 @@ public class ConstantPoolMethodHandleInfo: IConstantPool {
   public E_ConstantPoolTag GetTag() {
     return Tag;
   }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolMethodHandleInfo(ReferenceKind={ReferenceKind}, ReferenceIndex={ReferenceIndex})";
+  }
 }
 
 public class ConstantPoolMethodTypeInfo: IConstantPool {
@@ -224,6 +272,11 @@ public class ConstantPoolMethodTypeInfo: IConstantPool {
 
   public E_ConstantPoolTag GetTag() {
     return Tag;
+  }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolMethodTypeInfo(DescriptorIndex={DescriptorIndex})";
   }
 }
 
@@ -247,6 +300,11 @@ public class ConstantPoolDynamicInfo: IConstantPool {
   public E_ConstantPoolTag GetTag() {
     return Tag;
   }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolDynamicInfo(BootstrapMethodAttrIndex={BootstrapMethodAttrIndex}, NameAndTypeIndex={NameAndTypeIndex})";
+  }
 }
 
 public class ConstantPoolPackageModuleInfo: IConstantPool {
@@ -265,6 +323,11 @@ public class ConstantPoolPackageModuleInfo: IConstantPool {
 
   public E_ConstantPoolTag GetTag() {
     return Tag;
+  }
+
+  public override string ToString()
+  {
+    return $"ConstantPoolPackageModuleInfo(NameIndex={NameIndex})";
   }
 }
 
