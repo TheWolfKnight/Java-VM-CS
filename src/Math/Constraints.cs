@@ -1,5 +1,4 @@
 
-using System;
 using System.Numerics;
 
 namespace CS_Java_VM.Src.Maths.Constraints;

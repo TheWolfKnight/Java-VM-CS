@@ -1,5 +1,4 @@
 
-using System;
 using System.Diagnostics;
 
 namespace CS_Java_VM.Src.Maths.Convertor;
@@ -87,7 +86,5 @@ public static class Convertor {
     return h * h2;
   }
 
-
   #endregion
-
 }
