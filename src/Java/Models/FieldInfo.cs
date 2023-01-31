@@ -45,9 +45,7 @@ public class FieldsInfo {
                  syntheticMask        = 0xF000;
 
     UInt16 visibilityStatus = (UInt16)(accessFlags & visibilityMask);
-    if (visibilityStatus == 0x0000)
-      throw new ArgumentException("The visibility status must be set");
-    else {
+    if (visibilityStatus != 0x0000) {
       const UInt16 publicMask    = 0x0001,
                    privateMask   = 0x0002,
                    protectedMask = 0x0004,

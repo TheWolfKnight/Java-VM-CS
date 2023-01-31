@@ -4,6 +4,7 @@ public class Test {
   private void test2() {}
   protected String returnHello() { return "Hello";}
 
+  float n = .3f;
   static boolean yesno = true;
   public int a = 0;
   private static String b = "Hello, world";
