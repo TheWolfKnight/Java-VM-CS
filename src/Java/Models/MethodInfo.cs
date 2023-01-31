@@ -1,10 +1,5 @@
 using CS_Java_VM.Src.Java.Constants;
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CS_Java_VM.Src.Java.Models;
 
 public class MethodInfo {
@@ -44,8 +39,6 @@ public class MethodInfo {
     Attributes[ArrayPointer] = attribute;
     ArrayPointer++;
   }
-
-  #region Unused region
 
   /// <summary>
   /// Converts the access flags mask into the desired flags
@@ -93,11 +86,9 @@ public class MethodInfo {
   }
 
   private string FlagsToString() {
-    string result = string.Join(", ", AccessFlags);
+    string result = string.Join(", ", AccessFlags.Select(item => item.ToString()));
     return result;
   }
-
-  #endregion
 
   public override string ToString()
   {

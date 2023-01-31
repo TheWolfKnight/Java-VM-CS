@@ -1,8 +1,6 @@
 
 using CS_Java_VM.Src.Java.Constants;
 
-using System.Collections.Generic;
-using System;
 
 namespace CS_Java_VM.Src.Java.Models;
 
@@ -16,7 +14,6 @@ public class FieldsInfo {
 
   public FieldsInfo(UInt16 accessFlags, UInt16 nameIndex, UInt16 descriptorIndex, UInt16 attributesCount) {
     AccessFlags = ParseAccessFlags(accessFlags);
-    FlagsToString();
 
     NameIndex = nameIndex;
     DescriptorIndex = descriptorIndex;

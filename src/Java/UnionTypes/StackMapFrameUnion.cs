@@ -1,8 +1,6 @@
 
 using CS_Java_VM.Src.Java.Constants;
 
-using System;
-
 namespace CS_Java_VM.Src.Java.Union;
 
 #region Interface

@@ -1,7 +1,5 @@
 using CS_Java_VM.Src.Java.Models;
 
-using System;
-
 namespace CS_Java_VM.Src.Java.Union;
 
 #region Interface Definition
