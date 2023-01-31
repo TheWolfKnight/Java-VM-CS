@@ -2,6 +2,7 @@
 public class Test {
   public static void test1() {}
   private void test2() {}
+  protected String returnHello() { return "Hello";}
 
   static boolean yesno = true;
   public int a = 0;
