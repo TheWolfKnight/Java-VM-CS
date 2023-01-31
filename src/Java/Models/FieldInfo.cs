@@ -43,14 +43,31 @@ public class FieldsInfo {
   private List<E_FieldAccessFlags> ParseAccessFlags(UInt16 accessFlags) {
     List<E_FieldAccessFlags> result = new List<E_FieldAccessFlags>();
 
-    const UInt16 visibilityMask = 0x000F;
-    const UInt16 finalityStausMask = 0x00F0;
-    const UInt16 declarationTypeMask = 0x0F00;
-    const UInt16 syntheticMask = 0xF000;
+    const UInt16 visibilityMask       = 0x000F,
+                 finalityStausMask    = 0x00F0,
+                 syntheticMask        = 0xF000;
 
-    result.Add((E_FieldAccessFlags)(accessFlags & visibilityMask));
-    result.Add((E_FieldAccessFlags)(accessFlags & finalityStausMask));
-    result.Add((E_FieldAccessFlags)(accessFlags & declarationTypeMask));
+    UInt16 visibilityStatus = (UInt16)(accessFlags & visibilityMask);
+    if (visibilityStatus == 0x0000)
+      throw new ArgumentException("The visibility status must be set");
+    else {
+      const UInt16 publicMask    = 0x0001,
+                   privateMask   = 0x0002,
+                   protectedMask = 0x0004,
+                   staticMask    = 0x0008;
+      if ((UInt16)(visibilityStatus & publicMask) != 0x0000)
+        result.Add(E_FieldAccessFlags.ACC_PUBLIC);
+      else if ((UInt16)(visibilityStatus & privateMask) != 0x0000)
+        result.Add(E_FieldAccessFlags.ACC_PRIVAT);
+      else if ((UInt16)(visibilityStatus & protectedMask) != 0x0000)
+        result.Add(E_FieldAccessFlags.ACC_PROTECTED);
+      if ((UInt16)(visibilityStatus & staticMask) != 0x0000)
+        result.Add(E_FieldAccessFlags.ACC_STATIC);
+    }
+
+    UInt16 finalityStaus = (UInt16)(accessFlags & finalityStausMask);
+    if (finalityStaus != 0x0000)
+      result.Add((E_FieldAccessFlags)finalityStaus);
 
     UInt16 isSynthetic = (UInt16)(accessFlags & syntheticMask);
     if (isSynthetic != 0x0000)
@@ -60,13 +77,7 @@ public class FieldsInfo {
   }
 
   private string FlagsToString() {
-    string result = string.Empty;
-
-
-    foreach (E_FieldAccessFlags flag in AccessFlags) {
-      result += flag.ToString();
-    }
-
+    string result = string.Join(", ", AccessFlags.Select(item => item.ToString()));
     return result;
   }
 
@@ -75,7 +86,7 @@ public class FieldsInfo {
     string accessFlagsString = FlagsToString();
     string attributesString = string.Join($",{Environment.NewLine}\t\t\t\t", Attributes.AsEnumerable());
 
-    return $"FieldsInfo(AccessFlags={accessFlagsString}, NameIndex={NameIndex}, DescriptorIndex={DescriptorIndex}),AttributesCount={AttributesCount},{Environment.NewLine}\t\t\tAttributes={attributesString})";
+    return $"FieldsInfo(AccessFlags=[{accessFlagsString}], NameIndex={NameIndex}, DescriptorIndex={DescriptorIndex}),AttributesCount={AttributesCount},{Environment.NewLine}\t\t\tAttributes={attributesString})";
   }
 
 }

@@ -26,7 +26,6 @@ public class MethodInfo {
                     UInt16 attributesCount)
   {
     AccessFlags = ParseAccessFlags(accessFlags);
-    FlagsToString();
 
     NameIndex = nameIndex;
     DescriptorIndex = descriptorIndex;
@@ -74,7 +73,6 @@ public class MethodInfo {
         result.Add(E_MethodAccessFlags.ACC_PRIVAT);
       else if ((UInt16)(visibilityStatus & protectedMask) != 0x0000)
         result.Add(E_MethodAccessFlags.ACC_PROTECTED);
-      else throw new ArgumentException("The access flags must contain a visibility mask");
       if ((UInt16)(visibilityStatus & staticMask) != 0x0000)
         result.Add(E_MethodAccessFlags.ACC_STATIC);
     }
