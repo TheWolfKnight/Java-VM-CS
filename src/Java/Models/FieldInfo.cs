@@ -62,6 +62,7 @@ public class FieldsInfo {
   private string FlagsToString() {
     string result = string.Empty;
 
+
     foreach (E_FieldAccessFlags flag in AccessFlags) {
       result += flag.ToString();
     }

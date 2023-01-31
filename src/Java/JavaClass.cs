@@ -105,7 +105,6 @@ public class JavaClass {
       Fields[i] = info;
     }
 
-
     // Gets the MethodsCount variable and sets the Methods array to be of size MethodsCount-1
     MethodsCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
@@ -114,7 +113,6 @@ public class JavaClass {
       MethodInfo newMethodInfo = GenerateMethodInfo(ref pointer, ref bytes);
       Methods[i] = newMethodInfo;
     }
-
 
     // Gets the AttributesCount variable and sets the Attributes array to be of size AttributesCount-1
     AttributesCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
@@ -393,20 +391,20 @@ public class JavaClass {
 
   public override string ToString()
   {
-    string sep = $",{Environment.NewLine}\t\t";
+    string sep = $",{Environment.NewLine}\t\t",
+           prefix = sep.Substring(1);
 
     string constantPoolString =
-        ConstantPool != null && ConstantPool.Length > 0 ? sep + string.Join(sep, ConstantPool.AsEnumerable()) : "";
+        ConstantPool != null && ConstantPool.Length > 0 ? prefix + string.Join(sep, ConstantPool.AsEnumerable()) : "";
     string interfacesString =
-        Interfaces != null && Interfaces.Length > 0 ? sep + string.Join(sep, Interfaces.AsEnumerable()) : "";
+        Interfaces != null && Interfaces.Length > 0 ? prefix + string.Join(sep, Interfaces.AsEnumerable()) : "";
     string fieldsInfoString =
-        Fields != null && Fields.Length > 0 ? sep + string.Join(sep, Fields.AsEnumerable()) : "";
+        Fields != null && Fields.Length > 0 ? prefix + string.Join(sep, Fields.AsEnumerable()) : "";
     string methodsInfoString =
-        Methods != null && Methods.Length > 0 ? sep + string.Join(sep, Methods.AsEnumerable()) : "";
+        Methods != null && Methods.Length > 0 ? prefix + string.Join(sep, Methods.AsEnumerable()) : "";
     string attributesString =
-        Attributes != null && Attributes.Length > 0 ? sep + string.Join(sep, Attributes.AsEnumerable()) : "";
+        Attributes != null && Attributes.Length > 0 ? prefix + string.Join(sep, Attributes.AsEnumerable()) : "";
 
     return $"JavaClass({Environment.NewLine}\tMagicNumber={MagicNumber}, AccessFlags=[{string.Join(", ", AccessFlags)}],{Environment.NewLine}\tMinorVersion={MinorVersion}, MajorVersion={MajorVersion}, ThisClass={ThisClass}, SuperClass={SuperClass},{Environment.NewLine}\tConstantPoolCount={ConstantPoolCount}, ConstantPool=[{constantPoolString}],{Environment.NewLine}\tInterfaceCount={InterfacesCount}, Interfaces=[{interfacesString}],{Environment.NewLine}\tFieldsCount={FieldsCount}, Fields=[{fieldsInfoString}],{Environment.NewLine}\tMethodsCount={MethodsCount}, Methods=[{methodsInfoString}],{Environment.NewLine}\tAttributesCount={AttributesCount}, Attributes=[{attributesString}])";
   }
-
 }
