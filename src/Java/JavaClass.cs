@@ -260,15 +260,10 @@ public class JavaClass {
         throw new Exception("Unrechable Code");
     }
 
-    if (result == null)
-      throw new Exception("Unrechable Code");
-
     return result;
   }
 
   private FieldsInfo GenerateFieldsInfo(ref int pointer, ref byte[] bytes) {
-    FieldsInfo? result = null;
-
     UInt16 accessFlags = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
     UInt16 nameIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
@@ -278,15 +273,12 @@ public class JavaClass {
     UInt16 attributesCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
 
-    result = new FieldsInfo(accessFlags, nameIndex, descriptorIndex, attributesCount);
+    FieldsInfo result = new FieldsInfo(accessFlags, nameIndex, descriptorIndex, attributesCount);
 
     if (attributesCount > 0) {
       AttributeInfo attribute = GenerateAttributeInfo(ref pointer, ref bytes);
       result.AddAttributeToAttributeArray(attribute);
     }
-
-    if (result == null)
-      throw new ArgumentException("Could not generate fields info");
 
     return result;
   }
@@ -361,8 +353,6 @@ public class JavaClass {
       throw new ArgumentNullException("The ConstantPool table is equal to null, there must be a ConstantPool table to get the AttributeInfo");
     }
 
-    AttributeInfo? attributeInfo = null;
-
     UInt16 nameIndexPointer = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
     IConstantPool item = ConstantPool[nameIndexPointer];
@@ -377,10 +367,8 @@ public class JavaClass {
     IEnumerable<byte> info = bytes.Skip(pointer).Take((int)attributeLength);
     pointer += (int)attributeLength;
 
-    attributeInfo = new AttributeInfo(nameIndexPointer, attributeLength, info);
+    AttributeInfo attributeInfo = new AttributeInfo(nameIndexPointer, attributeLength, info);
 
-    if (attributeInfo == null)
-      throw new ArgumentNullException("The result variable can not be null");
     return attributeInfo;
   }
 
