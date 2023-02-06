@@ -229,7 +229,7 @@ public class ConstantPoolUtf8Info: IConstantPool {
 
   public override string ToString()
   {
-    return $"ConstantPoolUtf8Info(Length={Length}, Bytes=[{string.Join(", ", Bytes)}], StringRep={GetStringRepresentation})";
+    return $"ConstantPoolUtf8Info(Length={Length}, Bytes=[{string.Join(", ", Bytes)}], StringRep={GetStringRepresentation()})";
   }
 }
 

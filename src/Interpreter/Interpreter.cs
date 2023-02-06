@@ -9,15 +9,13 @@ public class Interpreter {
   private string RootPath;
   public JavaClass RootFile;
 
-  public List<JavaClass> ClassList;
+  public Dictionary<string, JavaClass> ClassList;
 
   public Interpreter(string origin) {
     origin.Replace("\\", "/");
     RootPath = origin.Substring(0, origin.LastIndexOf("/"));
-    System.Console.WriteLine(RootPath);
-    Environment.Exit(1);
     RootFile = new JavaClass(origin);
-    ClassList = new List<JavaClass>();
+    ClassList = new Dictionary<string, JavaClass>();
   }
 
   public void ComplieDependencies() {
@@ -30,17 +28,20 @@ public class Interpreter {
         .ToArray();
 
     string[] paths = utf8Constants.Where(item => {
-      string info = item.GetStringRepresentation();
-      return info[0] == 'L' && info[^1] == ';';
-    })
-    .Select(item => {
-      string info = item.GetStringRepresentation();
-      return info.Substring(1, info.Length-2);
-    })
-    .ToArray();
+        string info = item.GetStringRepresentation();
+        return info[0] == 'L' && info[^1] == ';';
+      })
+      .Select(item => {
+        string info = item.GetStringRepresentation();
+        return info.Substring(1, info.Length-2);
+      })
+      .ToArray();
 
-
-
+  foreach (string path in paths) {
+    if (path.Substring(0,4) == "java")
+      continue;
+      ClassList.TryAdd(path, new JavaClass("./"+path+".class"));
+    }
   }
 
   public override string ToString()
