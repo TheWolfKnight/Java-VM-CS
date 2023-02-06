@@ -1,3 +1,6 @@
+package test;
+
+import test.sub_folder.enum_class;
 
 public class Test {
   public static void test1() {}
@@ -11,5 +14,6 @@ public class Test {
 
   public static void main(String[] args) {
     System.out.println(b);
+    enum_class test = enum_class.TEST;
   }
 }

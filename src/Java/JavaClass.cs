@@ -17,7 +17,7 @@ public class JavaClass {
   UInt32 MagicNumber;
 
   UInt16 MinorVersion, MajorVersion;
-  UInt16 AccessFlags;
+  List<E_JavaClassAccessFlags> AccessFlags;
 
   UInt16 ThisClass, SuperClass;
 
@@ -72,7 +72,8 @@ public class JavaClass {
     }
 
     // Gets the AccessFlag from
-    AccessFlags = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
+    AccessFlags =
+      GenerateAccessFlags(Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2)));
     pointer += 2;
 
     // Gets the this class and super class from the Java class file
@@ -355,10 +356,15 @@ public class JavaClass {
 
     UInt16 nameIndexPointer = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    IConstantPool item = ConstantPool[nameIndexPointer];
-
-    if (item.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8)
-      throw new ArgumentException("The type of the AttributeInfos name index must be a CONSTANTPOO_Utf8_Info");
+    while (true) {
+      IConstantPool item = ConstantPool[nameIndexPointer];
+      if (item.GetTag() == E_ConstantPoolTag.CONSTANT_UTF8) break;
+      else if (item.GetTag() == E_ConstantPoolTag.CONSTANT_CLASS) {
+        ConstantPoolClass classItem = (ConstantPoolClass)item;
+        nameIndexPointer = classItem.NameIndex;
+      }
+      else throw new ArgumentException("Could not find a name for the attribute, all attributes must have a pointer to the ConstantPool that results in a ConstantPool_UTF8");
+    }
 
     UInt32 attributeLength = Convertor.BytesToUInt32(bytes.Skip(pointer).Take(4));
     pointer += 4;
