@@ -14,27 +14,27 @@ public class JavaClass {
   /// <summary>
   /// Is the magic number for a Java class file, and will always be 0xCAFEBABE
   /// </summary>
-  UInt32 MagicNumber;
+  public UInt32 MagicNumber;
 
-  UInt16 MinorVersion, MajorVersion;
-  List<E_JavaClassAccessFlags> AccessFlags;
+  public UInt16 MinorVersion, MajorVersion;
+  public List<E_JavaClassAccessFlags> AccessFlags;
 
-  UInt16 ThisClass, SuperClass;
+  public UInt16 ThisClass, SuperClass;
 
-  UInt16 ConstantPoolCount;
-  IConstantPool[]? ConstantPool;
+  public UInt16 ConstantPoolCount;
+  public IConstantPool[]? ConstantPool;
 
-  UInt16 InterfacesCount;
-  UInt16[]? Interfaces;
+  public UInt16 InterfacesCount;
+  public UInt16[]? Interfaces;
 
-  UInt16 FieldsCount;
-  FieldsInfo[]? Fields;
+  public UInt16 FieldsCount;
+  public FieldsInfo[]? Fields;
 
-  UInt16 MethodsCount;
-  MethodInfo[]? Methods; 
+  public UInt16 MethodsCount;
+  public MethodInfo[]? Methods; 
 
-  UInt16 AttributesCount;
-  AttributeInfo[]? Attributes;
+  public UInt16 AttributesCount;
+  public AttributeInfo[]? Attributes;
 
   /// <summary>
   /// The constructor for a Java class file

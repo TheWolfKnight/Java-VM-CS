@@ -223,9 +223,13 @@ public class ConstantPoolUtf8Info: IConstantPool {
     return Tag;
   }
 
+  public string GetStringRepresentation() {
+    return Encoding.Default.GetString(Bytes);
+  }
+
   public override string ToString()
   {
-    return $"ConstantPoolUtf8Info(Length={Length}, Bytes=[{string.Join(", ", Bytes)}], StringRep={Encoding.Default.GetString(Bytes)})";
+    return $"ConstantPoolUtf8Info(Length={Length}, Bytes=[{string.Join(", ", Bytes)}], StringRep={GetStringRepresentation})";
   }
 }
 
