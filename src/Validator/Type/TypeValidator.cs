@@ -14,7 +14,4 @@ public class TypeValidator {
     CallStack = new Stack<VarType>();
     Heap = new List<Stack<VarType>>();
   }
-
-  
-
 }

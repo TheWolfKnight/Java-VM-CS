@@ -147,19 +147,27 @@ public class JavaClass {
     return result;
   }
 
-  private void ValidateSuperClass(UInt16 superIndex) {
-    if (ConstantPool == null && superIndex > 0)
-      throw new Exception("The super class could not be indexed in the constant pool");
-
-    if (superIndex == 0) {
-    }
-
+  private void ValidateSuperClass() {
     if (ConstantPool == null)
-      throw new ArgumentNullException();
+      throw new NullReferenceException("Cannot reference the ConstantPool as it is null");
 
-    IConstantPool superClass = ConstantPool.ElementAt(superIndex);
-    if (superClass.GetTag() != E_ConstantPoolTag.CONSTANT_CLASS)
-      throw new Exception("The super class points to an element in the ConstantPool that is not an Class object");
+    if (SuperClass == 0) {
+      IConstantPool item = ConstantPool[ThisClass-1];
+      if (item.GetTag() != E_ConstantPoolTag.CONSTANT_CLASS)
+        throw new InvalidDataException("The item at the ThisClass pointer must be a CONSTANT_CLASS type or the class must have ACC_INTERFACE");
+
+      ConstantPoolClass constantClass = (ConstantPoolClass)item;
+
+      IConstantPool nameRef = ConstantPool[constantClass.NameIndex-1];
+
+      if (nameRef.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8)
+        throw new InvalidDataException("The name index must point to a CONSTANT_UTF8 in the ConstantPool table");
+
+      ConstantPoolUtf8Info info = (ConstantPoolUtf8Info)nameRef;
+
+      if (info.GetStringRepresentation() != "java/lang/Object")
+        throw new InvalidDataException("The only acceptable result for the ThisClass when super is 0, is \"java/lang/Object\"");
+    }
   }
 
 
@@ -300,10 +308,11 @@ public class JavaClass {
   }
 
   /// <summary>
-  /// 
+  /// Constructs an interface, using the bytes and pointer from the
+  /// Constructor
   /// </summary>
-  /// <param name="pointer">  </param>
-  /// <param name="bytes">  </param>
+  /// <param name="pointer"> A reference to the current pointer into the bytes array </param>
+  /// <param name="bytes"> A reference to the bytes array, that contains the bytes of the file </param>
   private UInt16 GenerateInterface(ref int pointer, ref byte[] bytes) {
     if (ConstantPool == null)
       throw new ArgumentNullException("ConstantPool is currently null");
@@ -357,7 +366,7 @@ public class JavaClass {
     UInt16 nameIndexPointer = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
     while (true) {
-      IConstantPool item = ConstantPool[nameIndexPointer];
+      IConstantPool item = ConstantPool[nameIndexPointer-1];
       if (item.GetTag() == E_ConstantPoolTag.CONSTANT_UTF8) break;
       else if (item.GetTag() == E_ConstantPoolTag.CONSTANT_CLASS) {
         ConstantPoolClass classItem = (ConstantPoolClass)item;

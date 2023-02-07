@@ -2,6 +2,8 @@ using CS_Java_VM.Src.Java.Constants;
 using CS_Java_VM.Src.Java.Models;
 using CS_Java_VM.Src.Java;
 
+using System.Diagnostics;
+
 namespace CS_Java_VM.Src.Interpreter;
 
 public class Interpreter {
@@ -18,9 +20,9 @@ public class Interpreter {
     ClassList = new Dictionary<string, JavaClass>();
   }
 
-  public void ComplieDependencies() {
+  public bool ComplieDependencies() {
     if (RootFile.ConstantPool == null)
-      return;
+      return true;
 
     ConstantPoolUtf8Info[] utf8Constants = RootFile.ConstantPool
         .Where(constant => constant.GetTag() == E_ConstantPoolTag.CONSTANT_UTF8)
@@ -40,8 +42,20 @@ public class Interpreter {
   foreach (string path in paths) {
     if (path.Substring(0,4) == "java")
       continue;
-      ClassList.TryAdd(path, new JavaClass("./"+path+".class"));
+      if (!ClassList.TryAdd(path, new JavaClass("./"+path+".class"))) {
+        System.Console.WriteLine($"[ERROR] Could not compile the file at path: {"./"+path+".class"}");
+        return false;
+      }
     }
+    return true;
+  }
+
+  public bool ValideateClassTyping() {
+    throw new NotImplementedException();
+  }
+
+  public bool Run() {
+    throw new NotImplementedException();
   }
 
   public override string ToString()
