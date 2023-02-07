@@ -1,8 +1,9 @@
 package test;
 
 import test.sub_folder.enum_class;
+import test.super_class.Super;
 
-public class Test {
+public class Test extends Super {
   public static void test1() {}
   private void test2() {}
   protected String returnHello() { return "Hello";}

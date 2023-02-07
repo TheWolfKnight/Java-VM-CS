@@ -147,16 +147,19 @@ public class JavaClass {
     return result;
   }
 
-  private void ValidateSuperClass() {
+  public void ValidateSuperClass(ref JavaClass rootFile, ref Dictionary<string, JavaClass> subFile) {
     if (ConstantPool == null)
       throw new NullReferenceException("Cannot reference the ConstantPool as it is null");
 
+    IConstantPool item;
+    ConstantPoolClass constantClass;
+
     if (SuperClass == 0) {
-      IConstantPool item = ConstantPool[ThisClass-1];
+      item = ConstantPool[ThisClass-1];
       if (item.GetTag() != E_ConstantPoolTag.CONSTANT_CLASS)
         throw new InvalidDataException("The item at the ThisClass pointer must be a CONSTANT_CLASS type or the class must have ACC_INTERFACE");
 
-      ConstantPoolClass constantClass = (ConstantPoolClass)item;
+      constantClass = (ConstantPoolClass)item;
 
       IConstantPool nameRef = ConstantPool[constantClass.NameIndex-1];
 
@@ -167,9 +170,22 @@ public class JavaClass {
 
       if (info.GetStringRepresentation() != "java/lang/Object")
         throw new InvalidDataException("The only acceptable result for the ThisClass when super is 0, is \"java/lang/Object\"");
+
+        return;
     }
+
+    item = ConstantPool[SuperClass-1];
+    if (item.GetTag() != E_ConstantPoolTag.CONSTANT_CLASS) throw new InvalidDataException("The super class must be a valid CONSTANT_CLASS in the ConstantPool");
+
+    constantClass = (ConstantPoolClass)item;
+    IConstantPool nameIndex = ConstantPool[constantClass.NameIndex-1];
+    if (nameIndex.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8) throw new InvalidDataException("The CONSTANT_CLASS must point to a CONSTNAT_UTF8");
+
   }
 
+  public bool IsFinal() {
+    return AccessFlags.Contains(E_JavaClassAccessFlags.ACC_FINAL);
+  }
 
   /// <summary>
   /// Handels the parsing for the tags, this will incroment the pointer globaly
