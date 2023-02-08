@@ -5,7 +5,7 @@ using CS_Java_VM.Src.Java;
 namespace CS_Java_VM {
   public class Program {
     static void Main(string[] argv) {
-      Interpreter interp = new Interpreter(@"./test/Test.class");
+      Interpreter interp = new Interpreter(@"./Ltest/Test.class");
       interp.ComplieDependencies();
 
       System.Console.WriteLine("Root File:");

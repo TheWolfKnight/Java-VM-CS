@@ -1,7 +1,7 @@
-package test;
+package Ltest;
 
-import test.sub_folder.enum_class;
-import test.super_class.Super;
+import Ltest.sub_folder.enum_class;
+import Ltest.super_class.Super;
 
 class Test {
   public static void test1() {}
@@ -15,7 +15,7 @@ class Test {
 
   public static void main(String[] args) {
     Super s = new Super();
-    s.helloWorld();
+    s.calcFib(10);
     System.out.println(b);
     enum_class test = enum_class.TEST;
   }
