@@ -29,6 +29,11 @@ public class Interpreter {
         .Select(item => (ConstantPoolUtf8Info)item)
         .ToArray();
 
+    ConstantPoolClass super = (ConstantPoolClass)RootFile.ConstantPool[RootFile.SuperClass-1];
+
+    string superPath =
+      ((ConstantPoolUtf8Info)RootFile.ConstantPool[super.NameIndex-1]).GetStringRepresentation();
+
     string[] paths = utf8Constants.Where(item => {
         string info = item.GetStringRepresentation();
         return info[0] == 'L' && info[^1] == ';';
@@ -37,6 +42,7 @@ public class Interpreter {
         string info = item.GetStringRepresentation();
         return info.Substring(1, info.Length-2);
       })
+      .Append(superPath)
       .ToArray();
 
   foreach (string path in paths) {

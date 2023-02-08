@@ -3,7 +3,7 @@ package test;
 import test.sub_folder.enum_class;
 import test.super_class.Super;
 
-public class Test extends Super {
+class Test {
   public static void test1() {}
   private void test2() {}
   protected String returnHello() { return "Hello";}
@@ -14,6 +14,8 @@ public class Test extends Super {
   private static String b = "Hello, world";
 
   public static void main(String[] args) {
+    Super s = new Super();
+    s.helloWorld();
     System.out.println(b);
     enum_class test = enum_class.TEST;
   }

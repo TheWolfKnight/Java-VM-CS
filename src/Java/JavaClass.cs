@@ -22,7 +22,7 @@ public class JavaClass {
   public UInt16 ThisClass, SuperClass;
 
   public UInt16 ConstantPoolCount;
-  public IConstantPool[]? ConstantPool;
+  public IConstantPool[] ConstantPool;
 
   public UInt16 InterfacesCount;
   public UInt16[]? Interfaces;
@@ -60,15 +60,16 @@ public class JavaClass {
     // Gets the constant pool count, and inits the constant pool
     ConstantPoolCount = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
-    if (ConstantPoolCount > 0) {
-      ConstantPool = new IConstantPool[ConstantPoolCount-1];
-      // Fills the ConstantPool array with the files constants
-      for (int i = 0; i < ConstantPoolCount-1; i++) {
-        byte constantPoolTag = bytes.Skip(pointer).Take(1).First();
-        pointer++;
-        IConstantPool newConstant = ParseConstantPoolTag(constantPoolTag, ref pointer, ref bytes);
-        ConstantPool[i] = newConstant;
-      }
+
+    if (ConstantPoolCount < 1) throw new InvalidDataException("The ConstantPool must contain at least one element");
+
+    ConstantPool = new IConstantPool[ConstantPoolCount-1];
+    // Fills the ConstantPool array with the files constants
+    for (int i = 0; i < ConstantPoolCount-1; i++) {
+      byte constantPoolTag = bytes.Skip(pointer).Take(1).First();
+      pointer++;
+      IConstantPool newConstant = ParseConstantPoolTag(constantPoolTag, ref pointer, ref bytes);
+      ConstantPool[i] = newConstant;
     }
 
     // Gets the AccessFlag from
@@ -120,37 +121,12 @@ public class JavaClass {
     }
   }
 
-  private List<E_JavaClassAccessFlags> GenerateAccessFlags(UInt16 accessFlags) {
-    List<E_JavaClassAccessFlags> result = new List<E_JavaClassAccessFlags>();
-
-    const UInt16 visibilityMask     = 0x000F,
-                 finalityStatusMask = 0x00F0,
-                 definitionMask     = 0x0F00,
-                 typeMask           = 0xF000;
-
-    UInt16 visibility = (UInt16)(accessFlags & visibilityMask);
-    if (visibility != 0x0000)
-      result.Add((E_JavaClassAccessFlags)visibility);
-
-    UInt16 finalityStatus = (UInt16)(accessFlags & finalityStatusMask);
-    if (finalityStatus != 0x0000)
-      result.Add((E_JavaClassAccessFlags)finalityStatus);
-
-    UInt16 definition = (UInt16)(accessFlags & definitionMask);
-    if (definition != 0x0000)
-      result.Add((E_JavaClassAccessFlags)definition);
-
-    UInt16 type = (UInt16)(accessFlags & typeMask);
-    if (type != 0x0000)
-      result.Add((E_JavaClassAccessFlags)type);
-
-    return result;
-  }
-
-  public void ValidateSuperClass(ref JavaClass rootFile, ref Dictionary<string, JavaClass> subFile) {
-    if (ConstantPool == null)
-      throw new NullReferenceException("Cannot reference the ConstantPool as it is null");
-
+  /// <summary>
+  /// Validates the super class for this .class file.
+  /// </summary>
+  /// <param name=""> A reference to the root file for the program </param>
+  /// <param name=""> A reference to all sub files loaded into the program </param>
+  public void ValidateSuperClass(ref JavaClass rootFile, ref Dictionary<string, JavaClass> subFiles) {
     IConstantPool item;
     ConstantPoolClass constantClass;
 
@@ -183,9 +159,66 @@ public class JavaClass {
 
   }
 
+  /// <summary>
+  /// Returns true if the class file contains the ACC_FINAL flag
+  /// </summary>
   public bool IsFinal() {
     return AccessFlags.Contains(E_JavaClassAccessFlags.ACC_FINAL);
   }
+
+  /// <summary>
+  /// Compiles the Access Flags from a UInt16 to a List of E_JavaClassAccessFlags
+  /// </summary>
+  private List<E_JavaClassAccessFlags> GenerateAccessFlags(UInt16 accessFlags) {
+    List<E_JavaClassAccessFlags> result = new List<E_JavaClassAccessFlags>();
+
+    const UInt16 visibilityMask     = 0x000F,
+                 finalityStatusMask = 0x00F0,
+                 definitionMask     = 0x0F00,
+                 typeMask           = 0xF000;
+
+    UInt16 visibility = (UInt16)(accessFlags & visibilityMask);
+    if (visibility != 0x0000)
+      result.Add((E_JavaClassAccessFlags)visibility);
+
+    UInt16 finalityStatus = (UInt16)(accessFlags & finalityStatusMask);
+    if (finalityStatus != 0x0000) {
+      const UInt16 finalMask = 0x0010,
+                   superMask = 0x0020;
+
+      if ((UInt16)(finalityStatus & finalMask) != 0x0000)
+        result.Add(E_JavaClassAccessFlags.ACC_FINAL);
+      if ((UInt16)(finalityStatus & superMask) != 0x0000)
+        result.Add(E_JavaClassAccessFlags.ACC_SUPER);
+    }
+
+    UInt16 definition = (UInt16)(accessFlags & definitionMask);
+    if (definition != 0x0000) {
+      const UInt16 interfaceMask = 0x0200,
+                   abstractMask  = 0x0400;
+      if ((UInt16)(definition & interfaceMask) != 0x0000)
+        result.Add(E_JavaClassAccessFlags.ACC_INTERFACE);
+      if ((UInt16)(definition & abstractMask) != 0x0000)
+        result.Add(E_JavaClassAccessFlags.ACC_ABSTRACT);
+    }
+
+    UInt16 type = (UInt16)(accessFlags & typeMask);
+    if (type != 0x0000) {
+      const UInt16 syntheticMask  = 0x1000,
+                   annotationMask = 0x2000,
+                   enumMask       = 0x4000;
+
+      if ((UInt16)(type & syntheticMask) != 0x0000)
+        result.Add(E_JavaClassAccessFlags.ACC_SYNTHETIC);
+      if ((UInt16)(type & annotationMask) != 0x0000)
+        result.Add(E_JavaClassAccessFlags.ACC_ANNOTATION);
+      if ((UInt16)(type & enumMask) != 0x0000)
+        result.Add(E_JavaClassAccessFlags.ACC_ENUM);
+    }
+
+    return result;
+  }
+
 
   /// <summary>
   /// Handels the parsing for the tags, this will incroment the pointer globaly
@@ -330,9 +363,6 @@ public class JavaClass {
   /// <param name="pointer"> A reference to the current pointer into the bytes array </param>
   /// <param name="bytes"> A reference to the bytes array, that contains the bytes of the file </param>
   private UInt16 GenerateInterface(ref int pointer, ref byte[] bytes) {
-    if (ConstantPool == null)
-      throw new ArgumentNullException("ConstantPool is currently null");
-
     UInt16 interfaceIndex = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
 
@@ -375,10 +405,6 @@ public class JavaClass {
   /// <param name="pointer"> A reference to the current array pointer </param>
   /// <param name="byte"> A reference to the byte array </param>
   private AttributeInfo GenerateAttributeInfo(ref int pointer, ref byte[] bytes) {
-    if (ConstantPool == null) {
-      throw new ArgumentNullException("The ConstantPool table is equal to null, there must be a ConstantPool table to get the AttributeInfo");
-    }
-
     UInt16 nameIndexPointer = Convertor.BytesToUInt16(bytes.Skip(pointer).Take(2));
     pointer += 2;
     while (true) {
@@ -408,8 +434,7 @@ public class JavaClass {
     string sep = $",{Environment.NewLine}\t\t",
            prefix = sep.Substring(1);
 
-    string constantPoolString =
-        ConstantPool != null && ConstantPool.Length > 0 ? prefix + string.Join(sep, ConstantPool.AsEnumerable()) : "";
+    string constantPoolString = prefix + string.Join(sep, ConstantPool.AsEnumerable());
     string interfacesString =
         Interfaces != null && Interfaces.Length > 0 ? prefix + string.Join(sep, Interfaces.AsEnumerable()) : "";
     string fieldsInfoString =
