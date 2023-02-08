@@ -1,7 +1,7 @@
-package Ltest;
+package test;
 
-import Ltest.sub_folder.enum_class;
-import Ltest.super_class.Super;
+import test.sub_folder.enum_class;
+import test.super_class.Super;
 
 class Test {
   public static void test1() {}

@@ -1,4 +1,4 @@
-package Ltest.sub_folder;
+package test.sub_folder;
 
 public enum enum_class {
   TEST,

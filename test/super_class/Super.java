@@ -1,4 +1,4 @@
-package Ltest.super_class;
+package test.super_class;
 
 public class Super {
   public int calcFib(int n) {
