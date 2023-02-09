@@ -9,7 +9,7 @@ public static class TypeCheckService {
   /// <summary>
   /// This dictionary contains all the, valid types in the Java language.<br/>
   /// WARNING: This dose not include the types that require linking or
-  ///          the array.
+  ///          the array type.
   /// </summary>
   private static Dictionary<char, string> TYPE_NAMES = new Dictionary<char, string>() {
     { 'B',  "byte" },
@@ -94,21 +94,25 @@ public static class TypeCheckService {
   }
 
   /// <summary>
-  /// 
+  /// Generates the inner types for the VarType that is being constructed
   /// </summary>
-  /// <param name="">  </param>
+  /// <param name="type"> This string contains the types delimited by the <b>";"</b> </param>
   private static VarType[] GenerateInnerTypes(string type) {
+    // Splits the inner types, so that we can get them one at the time
     IEnumerable<string> tmp = type.Split(';')
                                   .Where(item => item.Length > 0)
+                                  // adds back the ;
                                   .Select(item => item+";");
+    // Counts the elements of the IEnumerable, and stores them
     int genericCount = tmp.Count(item => true);
 
+    // Generates an array for the result
     VarType[] result = new VarType[genericCount];
 
+    // Loops the IEnumerable, and generates the VarTypes for the results
     for (int i = 0; i < genericCount; ++i) {
       result[i] = GetType(tmp.ElementAt(i));
     }
-
     return result;
   }
 }
