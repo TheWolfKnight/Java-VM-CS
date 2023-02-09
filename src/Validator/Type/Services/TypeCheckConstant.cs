@@ -1,4 +1,7 @@
+
 using CS_Java_VM.Src.Validator.Type.Models;
+
+using System.Text.RegularExpressions;
 
 namespace CS_Java_VM.Src.Validator.Services;
 
@@ -17,17 +20,6 @@ public static class TypeCheckConstants {
     { 'J' , "long"},
     { 'S' , "short"},
     { 'Z' , "boolean"},
-  };
-
-  /// <summary>
-  /// Contains all the default elements of the java language.
-  /// </summary>
-  private static Dictionary<string, string> JAVA_CONSTANTS = new Dictionary<string, string>() {
-    { "java/lang/Object",    "Object" },
-    { "java/lang/String",    "String" },
-    { "java/lang/Integer",   "Integer"},
-    { "java/io/PrintStream", "PrintStream" },
-    { "java/util/ArrayList", "ArrayList" },
   };
 
   /// <summary>
@@ -67,28 +59,45 @@ public static class TypeCheckConstants {
         // char to see if it is a ";". This makes sure a file/folder that
         // starts with "L" is not falesly identified.
         string sufix = type.Substring(type.Length-1, 1);
-        if (sufix == ";") {
-          // Greps a substring where the linker L and ; is not present
-          string linkedType = type.Substring(1, type.Length-2);
+        if (sufix != ";")
+          throw new InvalidDataException("If a linker is discoved, it must end with \";\"");
 
-          // Checks if the type is a default for java, as the java/lang
-          // files will not be compiled, but emulated in the C# engine
-          bool isJavaDefault = JAVA_CONSTANTS.TryGetValue(linkedType, out string? defaultName);
+        // Greps a substring where the linker L and ; is not present
+        string linkedType = type.Substring(1, type.Length-2);
+        // Make a regex ready to see if the type contains generics
+        Regex regex = new Regex(@"[a-zA-Z_\/]+<[a-zA-Z_\/]+>");
+        VarType result = new VarType(linkedType, name);
 
-          // If the linkedType is in the JAVA_CONSTANTS return a VarType
-          // with the type and name.
-          if (isJavaDefault && defaultName != null) return new VarType(defaultName, name);
+        // if the linkedType is found to be a match for the regex
+        // statment, then it will be treated as a generic type.
+        if (regex.IsMatch(linkedType)) {
+          // Checks the type tag of the current VarType result
+          // to make sure it is not with the generic in the to
+          // level tag
+          result.TypeTag = result.TypeTag.Substring(0, result.TypeTag.IndexOf('<'));
 
-          // TODO: Make a change such that generics get accounted for.
-          // INFO: the signature for a generic is something
-          //       like: L{link location}<{inner type}>;
+          // Generates the inner types for the VarType
+          VarType[] genericInnerTypes =
+            GenerateInnerTypes(linkedType.Substring(linkedType.IndexOf('<'), linkedType.Length-2));
 
-          // Returns the VarType for the linked type, and with the name set.
-          return new VarType(linkedType, name);
+          // Assignes the inner types to result.InnerType
+          result.Inner = genericInnerTypes;
         }
+
+        // Returns the VarType for the linked type, and with the name set.
+        return result;
       }
     }
     // If these checks fail, the program throws an InvalidDataException
     throw new InvalidDataException($"The input: {type} is not a type");
   }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="">  </param>
+  private static VarType[] GenerateInnerTypes(string type) {
+    throw new NotImplementedException();
+  }
+
 }
