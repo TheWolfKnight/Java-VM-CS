@@ -5,7 +5,7 @@ namespace CS_Java_VM.Src.Validator.Services;
 public static class TypeCheckConstants {
   /// <summary>
   /// This dictionary contains all the, valid types in the Java language.<br/>
-  /// WARNING: This dose not include the types that requre linking or
+  /// WARNING: This dose not include the types that require linking or
   ///          the array.
   /// </summary>
   private static Dictionary<char, string> TYPE_NAMES = new Dictionary<char, string>() {
