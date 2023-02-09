@@ -5,16 +5,19 @@ namespace CS_Java_VM.Src.Validator.Type.Models;
 
 
 public class VarType {
-  public (string TypeTag, string VarName) Identity;
+  public string TypeTag;
+  public string? VarName;
   public VarType[]? Inner;
 
-  public VarType(string varName, string typeTag, VarType[]? inner=null) {
-    Identity = (typeTag, varName);
+  public VarType(string typeTag, string? varName=null,  VarType[]? inner=null) {
+    VarName = varName;
+    TypeTag = typeTag;
     Inner = inner;
   }
 
   public override string ToString()
   {
-    return $"VarType(VarName={Identity.VarName}, TypeTag={Identity.TypeTag})";
+    string varName = VarName != null ? VarName : "InnerType";
+    return $"VarType(VarName={varName}, TypeTag={TypeTag})";
   }
 }

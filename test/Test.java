@@ -1,5 +1,7 @@
 package test;
 
+import java.util.ArrayList;
+
 import test.sub_folder.enum_class;
 import test.super_class.Super;
 
@@ -10,12 +12,13 @@ class Test {
 
   float n = .3f;
   static boolean yesno = true;
-  public int a = 0;
+  public static int a = 7;
   private static String b = "Hello, world";
+  ArrayList<Integer> t = new ArrayList<Integer>();
 
   public static void main(String[] args) {
     Super s = new Super();
-    s.calcFib(10);
+    s.calcFib(a);
     System.out.println(b);
     enum_class test = enum_class.TEST;
   }

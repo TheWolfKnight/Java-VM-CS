@@ -144,7 +144,7 @@ public class JavaClass {
 
       ConstantPoolUtf8Info info = (ConstantPoolUtf8Info)nameRef;
 
-      if (info.GetStringRepresentation() != "java/lang/Object")
+      if (info.GetStringRep() != "java/lang/Object")
         throw new InvalidDataException("The only acceptable result for the ThisClass when super is 0, is \"java/lang/Object\"");
 
         return;

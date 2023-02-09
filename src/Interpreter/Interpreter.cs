@@ -2,8 +2,6 @@ using CS_Java_VM.Src.Java.Constants;
 using CS_Java_VM.Src.Java.Models;
 using CS_Java_VM.Src.Java;
 
-using System.Diagnostics;
-
 namespace CS_Java_VM.Src.Interpreter;
 
 public class Interpreter {
@@ -27,28 +25,26 @@ public class Interpreter {
       return true;
 
     ConstantPoolUtf8Info[] utf8Constants = rootFile.ConstantPool
-        .Where(constant => constant.GetTag() == E_ConstantPoolTag.CONSTANT_UTF8)
-        .Select(item => (ConstantPoolUtf8Info)item)
-        .ToArray();
-
-    ConstantPoolClass super = (ConstantPoolClass)rootFile.ConstantPool[rootFile.SuperClass-1];
+      .Where(constant => constant.GetTag() == E_ConstantPoolTag.CONSTANT_UTF8)
+      .Select(item => (ConstantPoolUtf8Info)item)
+      .ToArray();
 
     string[] paths = utf8Constants.Where(item => {
-        string info = item.GetStringRepresentation();
+        string info = item.GetStringRep();
         return IsFile(info) && info+".class" != Origin;
       })
       .Select(item => {
-        string info = item.GetStringRepresentation();
+        string info = item.GetStringRep();
         return info.Substring(0, info.Length);
       })
       .ToArray();
 
-  foreach (string path in paths) {
-    if (path.Substring(0,4) == "java")
-      continue;
+    foreach (string path in paths) {
+      if (path.Substring(0,4) == "java")
+        continue;
 
       if (!ClassList.TryAdd(path, new JavaClass("./"+path+".class"))) {
-        System.Console.WriteLine($"[ERROR] Could not compile the file at path: {"./"+path+".class"}");
+        Console.WriteLine($"[ERROR] Could not compile the file at path: {"./"+path+".class"}");
         return false;
       }
     }

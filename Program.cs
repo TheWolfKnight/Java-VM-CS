@@ -8,8 +8,8 @@ namespace CS_Java_VM {
       Interpreter interp = new Interpreter(@"./test/Test.class");
       interp.ComplieDependencies();
 
-      System.Console.WriteLine("Root File:");
-      System.Console.WriteLine(interp.RootFile);
+      System.Console.Write("Root File: ");
+      System.Console.WriteLine($"{interp.RootFile.Key}{Environment.NewLine}{interp.RootFile.Value}");
 
       foreach (KeyValuePair<string, JavaClass> clsFile in interp.ClassList.AsEnumerable()) {
         System.Console.WriteLine(clsFile.Key+":");

@@ -1,6 +1,8 @@
 using CS_Java_VM.Src.Java.Constants;
 using CS_Java_VM.Src.Java.Union;
 
+using System.Text;
+
 namespace CS_Java_VM.Src.Java.Models;
 
 
@@ -13,6 +15,10 @@ public class AttributeInfo {
     AttributeNameIndex = attributeNameIndex;
     AttributeLength = attributeLength;
     Info = info;
+  }
+
+  public string StringRep() {
+    return Encoding.Default.GetString(Info.ToArray());
   }
 
   public override string ToString()
