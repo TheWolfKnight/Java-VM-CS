@@ -6,11 +6,11 @@ namespace CS_Java_VM.Src.Java.Models;
 
 public class FieldsInfo {
   private int ArrayPointer = 0;
-  List<E_FieldAccessFlags> AccessFlags;
-  UInt16 NameIndex;
-  UInt16 DescriptorIndex;
-  UInt16 AttributesCount;
-  AttributeInfo[] Attributes;
+  public List<E_FieldAccessFlags> AccessFlags;
+  public UInt16 NameIndex;
+  public UInt16 DescriptorIndex;
+  public UInt16 AttributesCount;
+  public AttributeInfo[] Attributes;
 
   public FieldsInfo(UInt16 accessFlags, UInt16 nameIndex, UInt16 descriptorIndex, UInt16 attributesCount) {
     AccessFlags = ParseAccessFlags(accessFlags);
