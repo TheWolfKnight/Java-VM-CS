@@ -3,9 +3,9 @@ using CS_Java_VM.Src.Validator.Type.Models;
 
 using System.Text.RegularExpressions;
 
-namespace CS_Java_VM.Src.Validator.Services;
+namespace CS_Java_VM.Src.Validator.Type.Services;
 
-public static class TypeCheckConstants {
+public static class TypeCheckService {
   /// <summary>
   /// This dictionary contains all the, valid types in the Java language.<br/>
   /// WARNING: This dose not include the types that require linking or
@@ -26,7 +26,7 @@ public static class TypeCheckConstants {
   /// Gets a Variable type, and name, and returns a VarType with the compiled information.
   /// </summary>
   /// <param name="type"> The type information for the variable </param>
-  /// <param name="name"> The name of the variable,<br/>WARNING: Can be null if the type is an inner type </param>
+  /// <param name="name"> The name of the variable,<br/><i><b>WARNING:</b></i> Can be null if the type is an inner type </param>
   /// <returns> Returns a VarType with the information for the variable </returns>
   public static VarType GetType(string type, string? name=null) {
     // Checks to see if the input is a single char
@@ -99,5 +99,4 @@ public static class TypeCheckConstants {
   private static VarType[] GenerateInnerTypes(string type) {
     throw new NotImplementedException();
   }
-
 }

@@ -17,8 +17,9 @@ class Test {
   ArrayList<Integer> t = new ArrayList<Integer>();
 
   public static void main(String[] args) {
-    Super s = new Super();
+    Super<Boolean, Float> s = new Super<Boolean, Float>();
     s.calcFib(a);
+    s.KeyIsSame(true, 0.1f);
     System.out.println(b);
     enum_class test = enum_class.TEST;
   }
