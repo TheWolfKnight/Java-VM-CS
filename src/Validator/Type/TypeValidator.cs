@@ -18,6 +18,7 @@ public class TypeValidator {
   public Stack<VarType> CallStack;
   public Stack<VarType> FieldStack;
   public List<Stack<VarType>> Heap;
+  public Dictionary<string, VarType> MethodMap;
 
   private JavaClass JC;
 
@@ -29,16 +30,15 @@ public class TypeValidator {
     CallStack = new Stack<VarType>();
     Heap = new List<Stack<VarType>>();
     FieldStack = new Stack<VarType>();
+    MethodMap = new Dictionary<string, VarType>();
 
     JC = jc;
 
     if (jc.Fields != null)
       GenerateFieldStack(ref jc.Fields);
 
-    return;
-
     if (jc.Methods != null) {
-      throw new NotImplementedException();
+      GenerateMethodMap(ref jc.Methods);
     }
 
   }
@@ -47,19 +47,35 @@ public class TypeValidator {
   /// 
   /// </summary>
   /// <param name="">  </param>
-  private void GenerateFieldStack(ref FieldsInfo[] fields) {
-    foreach (FieldsInfo info in fields) {
-      IConstantPool fieldName  = JC.ConstantPool[info.NameIndex-1],
-                    descriptor = JC.ConstantPool[info.DescriptorIndex-1];
+  private void GenerateMethodMap(ref MethodInfo[] methods) {
+    throw new NotImplementedException();
+  }
 
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="">  </param>
+  private void GenerateFieldStack(ref FieldsInfo[] fields) {
+    // loops all the fields in the file
+    foreach (FieldsInfo info in fields) {
+      // gets the fieldName and descriptor from the class file
+      IConstantPool fieldName       = JC.ConstantPool[info.NameIndex-1],
+                    fieldDescriptor = JC.ConstantPool[info.DescriptorIndex-1];
+
+      // Checks if the field and descriptor both have the
+      // E_ConstantPoolTag.CONSTANT_UTF8 tag.
       if (fieldName.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8 ||
-          descriptor.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8)
+          fieldDescriptor.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8)
         throw new InvalidDataException("A FieldsInfo descriptor or name does not point to a UTF-8 constant");
 
+      // Cast both to ConstantPoolUtf8Info instances
       ConstantPoolUtf8Info cstFieldName  = (ConstantPoolUtf8Info)fieldName,
-                           cstDescriptor = (ConstantPoolUtf8Info)descriptor;
+                           cstDescriptor = (ConstantPoolUtf8Info)fieldDescriptor;
 
+      // Loops all, if any, attributes pressent
       foreach (AttributeInfo attribute in info.Attributes) {
+        // if the attribute is found to be for a generic type, change the cstDescriptor
+        // to the descriptor for the generic type.
         if (IsGenreicTyped(attribute, out UInt16? res)) {
           if (res == null) throw new UnrechableCodeException();
           ConstantPoolUtf8Info genericConstant = (ConstantPoolUtf8Info)JC.ConstantPool[(int)res-1];
@@ -68,9 +84,11 @@ public class TypeValidator {
         }
       }
 
+      // set the result to be the return value for the TypeCheckService.GetType method
       VarType result =
         TypeCheckService.GetType(cstDescriptor.GetStringRep(), cstFieldName.GetStringRep());
 
+      // Push the result to the FieldStack
       FieldStack.Push(result);
     }
   }
@@ -106,12 +124,4 @@ public class TypeValidator {
 
     return true;
   }
-
-  /// <summary>
-  /// 
-  /// </summary>
-  private void GenerateMethodStack() {
-    throw new NotImplementedException();
-  }
-
 }
