@@ -65,7 +65,7 @@ public static class TypeCheckService {
         // Greps a substring where the linker L and ; is not present
         string linkedType = type.Substring(1, type.Length-2);
         // Make a regex ready to see if the type contains generics
-        Regex regex = new Regex(@"[a-zA-Z_\/]+<[a-zA-Z_\/]+>");
+        Regex regex = new Regex(@"[a-zA-Z_\/]+<[a-zA-Z_\/;]+>");
         VarType result = new VarType(linkedType, name);
 
         // if the linkedType is found to be a match for the regex
@@ -76,9 +76,10 @@ public static class TypeCheckService {
           // level tag
           result.TypeTag = result.TypeTag.Substring(0, result.TypeTag.IndexOf('<'));
 
+          int ltIndex  = linkedType.IndexOf('<')+1;
           // Generates the inner types for the VarType
           VarType[] genericInnerTypes =
-            GenerateInnerTypes(linkedType.Substring(linkedType.IndexOf('<'), linkedType.Length-2));
+            GenerateInnerTypes(linkedType.Substring(ltIndex, linkedType.Length - ltIndex-1));
 
           // Assignes the inner types to result.InnerType
           result.Inner = genericInnerTypes;
@@ -97,6 +98,17 @@ public static class TypeCheckService {
   /// </summary>
   /// <param name="">  </param>
   private static VarType[] GenerateInnerTypes(string type) {
-    throw new NotImplementedException();
+    IEnumerable<string> tmp = type.Split(';')
+                                  .Where(item => item.Length > 0)
+                                  .Select(item => item+";");
+    int genericCount = tmp.Count(item => true);
+
+    VarType[] result = new VarType[genericCount];
+
+    for (int i = 0; i < genericCount; ++i) {
+      result[i] = GetType(tmp.ElementAt(i));
+    }
+
+    return result;
   }
 }

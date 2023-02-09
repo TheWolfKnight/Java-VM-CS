@@ -15,9 +15,9 @@ class Test {
   public static int a = 7;
   private static String b = "Hello, world";
   ArrayList<Integer> t = new ArrayList<Integer>();
+  static Super<Boolean, Float> s = new Super<Boolean, Float>();
 
   public static void main(String[] args) {
-    Super<Boolean, Float> s = new Super<Boolean, Float>();
     s.calcFib(a);
     s.KeyIsSame(true, 0.1f);
     System.out.println(b);

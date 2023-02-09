@@ -15,9 +15,20 @@ public class VarType {
     Inner = inner;
   }
 
+  public string InnerToString() {
+    string result = "";
+
+    if (Inner == null) return result;
+
+    foreach(VarType inner in Inner) {
+      result += inner.ToString();
+    }
+    return result;
+  }
+
   public override string ToString()
   {
     string varName = VarName != null ? VarName : "InnerType";
-    return $"VarType(VarName={varName}, TypeTag={TypeTag})";
+    return $"VarType(VarName={varName}, TypeTag={TypeTag}, Inner=[{InnerToString()}])";
   }
 }

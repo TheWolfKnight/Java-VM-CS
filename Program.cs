@@ -21,14 +21,15 @@ namespace CS_Java_VM {
       string[] tests = {
         "I",
         "Z",
-        "LJava/io/PrintStream;",
-        "Ljava/util/ArrayList<Ljava/lang/Integer;>;"
+        "Ljava/io/PrintStream;",
+        "Ljava/util/ArrayList<Ljava/lang/Integer;>;",
+        "Ltest/super/Super<Ljava/lang/Boolean;Ljava/lang/Float;>;"
       };
 
       foreach (string test in tests) {
-        System.Console.WriteLine($"case: {test}");
+        System.Console.WriteLine($"Case: {test}");
         VarType result = TypeCheckService.GetType(test);
-        System.Console.WriteLine(result);
+        System.Console.WriteLine($"Result: {result}");
       }
 
     }
