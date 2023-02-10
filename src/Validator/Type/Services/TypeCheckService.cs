@@ -12,14 +12,15 @@ public static class TypeCheckService {
   ///          the array type.
   /// </summary>
   private static Dictionary<char, string> TYPE_NAMES = new Dictionary<char, string>() {
-    { 'B',  "byte" },
-    { 'C',  "char" },
-    { 'D',  "double" },
-    { 'F' , "float"},
-    { 'I' , "int"},
-    { 'J' , "long"},
-    { 'S' , "short"},
-    { 'Z' , "boolean"},
+    { 'B', "byte" },
+    { 'C', "char" },
+    { 'D', "double" },
+    { 'F', "float"},
+    { 'I', "int"},
+    { 'J', "long"},
+    { 'S', "short"},
+    { 'Z', "boolean"},
+    { 'V', "void"}
   };
 
   /// <summary>

@@ -4,7 +4,6 @@ using CS_Java_VM.Src.Validator.Type.Models;
 
 using CS_Java_VM.Src.Maths.Convertor;
 
-
 using CS_Java_VM.Src.Java.Constants;
 using CS_Java_VM.Src.Java.Models;
 using CS_Java_VM.Src.Java;
@@ -16,8 +15,9 @@ namespace CS_Java_VM.Src.Validator.Type;
 public class TypeValidator {
 
   public Stack<VarType> CallStack;
-  public Stack<VarType> FieldStack;
   public List<Stack<VarType>> Heap;
+
+  public Stack<VarType> FieldStack;
   public Dictionary<string, VarType> MethodMap;
 
   private JavaClass JC;
@@ -40,7 +40,6 @@ public class TypeValidator {
     if (jc.Methods != null) {
       GenerateMethodMap(ref jc.Methods);
     }
-
   }
 
   /// <summary>
@@ -48,13 +47,43 @@ public class TypeValidator {
   /// </summary>
   /// <param name="">  </param>
   private void GenerateMethodMap(ref MethodInfo[] methods) {
-    throw new NotImplementedException();
+    Span<MethodInfo> methodSpan = methods.AsSpan();
+    for (int i = 0; i < methodSpan.Length; ++i) {
+      MethodInfo info = methodSpan[i];
+      IConstantPool methodName       = JC.ConstantPool[info.NameIndex-1],
+                    methodDescriptor = JC.ConstantPool[info.DescriptorIndex-1];
+
+      if (methodName.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8 ||
+          methodDescriptor.GetTag() != E_ConstantPoolTag.CONSTANT_UTF8)
+        throw new InvalidDataException("A methods NameIndex and DescriptorIndex must point to a valid UTF-8 constant");
+
+      ConstantPoolUtf8Info cstMethodName       = (ConstantPoolUtf8Info)methodName,
+                           cstMethodDescriptor = (ConstantPoolUtf8Info)methodDescriptor;
+
+      // Cast the attributes array to a span, for faster enumeration
+      Span<AttributeInfo> Attributes = info.Attributes.AsSpan();
+      for (int j = 0; j < Attributes.Length; ++j) {
+        AttributeInfo attribute = Attributes[j];
+        if(IsGenreicTyped(attribute, out UInt16? res)) {
+          if (res == null) throw new UnrechableCodeException();
+          ConstantPoolUtf8Info genericConstant = (ConstantPoolUtf8Info)JC.ConstantPool[(int)res-1];
+          cstMethodDescriptor = genericConstant;
+          break;
+        }
+      }
+
+      VarType result =
+        TypeCheckService.GetType(cstMethodDescriptor.GetStringRep(), cstMethodName.GetStringRep());
+
+      MethodMap.Add(cstMethodName.GetStringRep(), result);
+    }
+
   }
 
   /// <summary>
-  /// 
+  /// Compiles the JC fields from a JavaClass instance
   /// </summary>
-  /// <param name="">  </param>
+  /// <param name=""> A reference to the JavaClass instancs field array </param>
   private void GenerateFieldStack(ref FieldsInfo[] fields) {
     // loops all the fields in the file
     foreach (FieldsInfo info in fields) {
