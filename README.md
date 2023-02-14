@@ -55,6 +55,5 @@ puts the output[^2] into the provided file path
 
 removes the validation step, and just runs the program. Will still fail on type error.
 
-
 [^1]: [JVM](https://en.wikipedia.org/wiki/Java_virtual_machine)
 [^2]: [System](https://docs.oracle.com/javase/8/docs/api/java/lang/System.html)
