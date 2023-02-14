@@ -47,14 +47,14 @@ __Windows__:
 
 ## Flags (Currently not avaliable)
 
-<!-- Uses html pure to display this part correctly -->
-<dl>
-<dt>-o/--output</dt>
-<dd>puts the output[^2] into the provided file path</dd>
+- \-o/\-\-output:
 
-<dt>-nv/--no-validation</dt>
-<dd>removes the validation step, and just runs the program. Will stil fail on type error.</dd>
-</dl>
+puts the output[^2] into the provided file path
+
+- \-nv/\-\-no-validation
+
+removes the validation step, and just runs the program. Will still fail on type error.
+
 
 [^1]: [JVM](https://en.wikipedia.org/wiki/Java_virtual_machine)
-[^2]: Everything from System.out.println and System.out.print functions.
+[^2]: [System](https://docs.oracle.com/javase/8/docs/api/java/lang/System.html)
